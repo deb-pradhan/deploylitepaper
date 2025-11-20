@@ -1,16 +1,33 @@
-# React + Vite
+# JLABS Litepaper
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, interactive litepaper designed for optimal reading experience and performance.
 
-Currently, two official plugins are available:
+## Setup & Development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-## React Compiler
+2. **Start local development server:**
+   ```bash
+   npm run dev
+   ```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Deployment
 
-## Expanding the ESLint configuration
+This project is built as a static site. To deploy to production:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. **Build the project:**
+   ```bash
+   npm run build
+   ```
+   This command compiles the application into the `dist` directory.
+
+2. **Deploy the `dist` folder:**
+   You can deploy the contents of the `dist` folder to any static hosting provider.
+
+   **Popular Options:**
+   - **Vercel:** Connect your GitHub repository and it will auto-detect the settings (Framework: Vite).
+   - **Netlify:** Drag and drop the `dist` folder or connect via Git.
+   - **GitHub Pages:** Configure to serve from the `gh-pages` branch (requires pushing the build artifact) or use a GitHub Action to build and deploy.
