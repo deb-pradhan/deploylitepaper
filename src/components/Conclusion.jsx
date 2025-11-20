@@ -1,0 +1,51 @@
+import React from 'react';
+import Section from './Section';
+
+const Conclusion = () => {
+    return (
+        <Section id="invitation" subtitle="9. An Open Invitation" title="The Neobank Era Has Begun">
+            <div className="mb-12">
+                <p className="mb-6">
+                    Deploy is not launching another short-lived 30 percent APY token that will rug when emissions end.
+                </p>
+                <p className="mb-8">
+                    We are building the financial infrastructure that will still be standing in 2030 and beyond: self-custodial by design, battle-tested through half a decade of chaos, ruthlessly focused on real yield that compounds whether markets are up, down, or sideways.
+                </p>
+
+                <div className="space-y-4 mb-12">
+                    <div className="p-4 border-l-2 border-paper-accent bg-paper-bg/50">
+                        If you are a Bitcoin or Ethereum holder who refuses to let your wealth sit idle any longer...
+                    </div>
+                    <div className="p-4 border-l-2 border-paper-accent bg-paper-bg/50">
+                        If you are an institution seeking the first crypto yield strategy worthy of permanent allocation...
+                    </div>
+                    <div className="p-4 border-l-2 border-paper-accent bg-paper-bg/50">
+                        If you are a protocol builder who wants the most reliable execution engine in DeFi...
+                    </div>
+                    <div className="p-4 border-l-2 border-paper-accent bg-paper-bg/50">
+                        If you are a fintech or payment company looking for a white-label product that actually delivers sustainable double-digit returns...
+                    </div>
+                    <div className="mt-4 font-bold pl-4">
+                        ...then Deploy was built for you.
+                    </div>
+                </div>
+
+                <div className="text-center py-12 border-t border-paper-border">
+                    <h3 className="text-2xl font-serif font-bold mb-6">Welcome to Deploy.</h3>
+
+                    <div className="flex flex-col gap-2 text-lg mb-8">
+                        <span>Hold the superior.</span>
+                        <span>Spend the inferior.</span>
+                        <span className="font-bold">Earn real yield on both.</span>
+                    </div>
+
+                    <a href="https://deploy.finance" className="inline-block px-8 py-3 bg-paper-accent text-white font-medium rounded hover:bg-black transition-colors">
+                        deploy.finance
+                    </a>
+                </div>
+            </div>
+        </Section>
+    );
+};
+
+export default Conclusion;
