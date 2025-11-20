@@ -54,3 +54,10 @@ h6 {
   font-weight: 700;
   letter-spacing: -0.02em;
 }
+
+/* Dark Purple Selection */
+::selection {
+  background-color: #4B0082;
+  /* Indigo/Dark Purple */
+  color: #FFFFFF;
+}

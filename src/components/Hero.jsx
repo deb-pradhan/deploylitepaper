@@ -9,10 +9,10 @@ const Hero = () => {
                 </span>
             </div>
 
-            <h1 className="text-5xl md:text-7xl font-serif font-bold text-paper-text mb-6 leading-tight">
+            <h1 className="text-4xl md:text-7xl font-serif font-bold text-paper-text mb-6 leading-tight">
                 Deploy Litepaper
             </h1>
-            <h2 className="text-2xl md:text-3xl font-serif text-paper-muted mb-12">
+            <h2 className="text-xl md:text-3xl font-serif text-paper-muted mb-12">
                 The Neobank for the Digital Age
             </h2>
 

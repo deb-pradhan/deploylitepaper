@@ -3,7 +3,7 @@ import Sidebar from './Sidebar';
 
 const Layout = ({ children }) => {
     return (
-        <div className="min-h-screen bg-paper-bg text-paper-text font-sans selection:bg-paper-accent selection:text-white">
+        <div className="min-h-screen bg-paper-bg text-paper-text font-sans">
             <Sidebar />
 
             <main className="lg:pl-64 min-h-screen">

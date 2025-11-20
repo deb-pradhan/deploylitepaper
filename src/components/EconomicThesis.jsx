@@ -47,7 +47,7 @@ const EconomicThesis = () => {
                 </p>
 
                 {/* Diagram 1: The Deploy Neobank Flow */}
-                <figure className="my-12 p-8 border border-paper-border rounded bg-white overflow-x-auto">
+                <figure className="my-12 p-4 md:p-8 border border-paper-border rounded bg-white overflow-x-auto max-w-full">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4 min-w-[600px]">
                         <div className="p-6 border border-black rounded text-center w-40 h-24 flex items-center justify-center font-medium">User<br />Wealth</div>
                         <div className="h-8 w-px bg-black md:h-px md:w-12 shrink-0"></div>
