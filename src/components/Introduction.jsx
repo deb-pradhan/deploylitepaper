@@ -9,7 +9,7 @@ const Introduction = () => {
                     In 2025, decentralized finance possesses the most sophisticated financial primitives ever created: instant global settlement, programmable money, deep liquidity across thousands of assets. Yet capital efficiency remains shockingly low.
                 </p>
                 <p className="mb-6">
-                    More than 80 percent of all stablecoin supply earns zero yield. Tens of millions of Bitcoin and Ethereum holders watch their wealth appreciate in cold storage but rarely put it to work without accepting directional risk or surrendering custody. Institutions allocate cautiously, repelled by the recurring blowups of over-leveraged, self-looping stablecoin experiments.
+                    More than 80 percent of all stablecoin supply earns zero yield. Tens of millions of Bitcoin and Ethereum holders watch their wealth appreciate in cold storage but rarely put it to work without accepting directional risk or surrendering custody. Institutions allocate cautiously, repelled by the recurring blowups of over leveraged, self looping stablecoin experiments.
                 </p>
                 <p className="mb-6 font-bold">
                     Three structural failures keep the majority of capital idle.

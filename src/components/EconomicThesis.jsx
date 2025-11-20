@@ -9,7 +9,7 @@ const EconomicThesis = () => {
                     History provides the clearest lens for understanding the future of money.
                 </p>
                 <p className="mb-6">
-                    During the Wildcat Banking era of the 19th-century United States, hundreds of private banks issued their own paper notes. Savvy citizens quickly learned to hoard gold and silver while spending the depreciating paper in daily commerce. Sir Thomas Gresham’s 16th-century observation was proven once again: <strong>bad money drives out good.</strong>
+                    During the Wildcat Banking era of the 19th century United States, hundreds of private banks issued their own paper notes. Savvy citizens quickly learned to hoard gold and silver while spending the depreciating paper in daily commerce. Sir Thomas Gresham’s 16th century observation was proven once again: <strong>bad money drives out good.</strong>
                 </p>
                 <p className="mb-6">
                     Crypto is recreating the same dynamic, only in reverse.
@@ -43,23 +43,48 @@ const EconomicThesis = () => {
                 </div>
 
                 <p className="mb-12">
-                    Deploy exists to make this strategy not just possible but automatic, productive, and available to everyone from retail holders to sovereign-scale institutions.
+                    Deploy exists to make this strategy not just possible but automatic, productive, and available to everyone from retail holders to sovereign scale institutions.
                 </p>
 
                 {/* Diagram 1: The Deploy Neobank Flow */}
-                <figure className="my-12 p-4 md:p-8 border border-paper-border rounded bg-white overflow-x-auto max-w-full">
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-4 min-w-[600px]">
-                        <div className="p-6 border border-black rounded text-center w-40 h-24 flex items-center justify-center font-medium">User<br />Wealth</div>
-                        <div className="h-8 w-px bg-black md:h-px md:w-12 shrink-0"></div>
-                        <div className="p-6 border-2 border-black rounded text-center w-40 h-24 flex items-center justify-center font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">Deploy<br />Protocol</div>
-                        <div className="h-8 w-px bg-black md:h-px md:w-12 shrink-0"></div>
-                        <div className="p-6 border border-black bg-gray-50 rounded text-center w-40 h-24 flex items-center justify-center">D-Asset<br />Collateral</div>
-                        <div className="h-8 w-px bg-black md:h-px md:w-12 shrink-0"></div>
-                        <div className="p-6 border border-black rounded text-center w-40 h-24 flex items-center justify-center">Neobank<br />Interface</div>
-                        <div className="h-8 w-px bg-black md:h-px md:w-12 shrink-0"></div>
-                        <div className="p-6 border border-black rounded text-center w-40 h-24 flex items-center justify-center">Everyday<br />Commerce</div>
-                    </div>
-                    <figcaption className="text-center text-sm text-paper-muted mt-8 font-medium">Figure 1: The Deploy Neobank Flow</figcaption>
+                <figure className="my-12 border border-paper-border rounded bg-white overflow-hidden">
+                    <svg viewBox="0 0 600 140" className="w-full h-auto font-sans bg-white" role="img" aria-labelledby="diagramTitle">
+                        <title id="diagramTitle">The Deploy Neobank Flow Diagram</title>
+                        
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#1A1A1A" />
+                            </marker>
+                        </defs>
+
+                        {/* Step 1: Idle Assets */}
+                        <g transform="translate(20, 30)">
+                            <rect x="0" y="0" width="140" height="80" rx="4" fill="white" stroke="#1A1A1A" strokeWidth="1.5" />
+                            <text x="70" y="35" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#1A1A1A">Idle Assets</text>
+                            <text x="70" y="55" textAnchor="middle" fontSize="11" fill="#666">BTC, ETH, USD</text>
+                        </g>
+
+                        {/* Arrow 1 */}
+                        <line x1="160" y1="70" x2="190" y2="70" stroke="#1A1A1A" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
+
+                        {/* Step 2: Deploy Protocol */}
+                        <g transform="translate(200, 20)">
+                            <rect x="0" y="0" width="160" height="100" rx="4" fill="#1A1A1A" stroke="#1A1A1A" strokeWidth="1.5" />
+                            <text x="80" y="45" textAnchor="middle" fontSize="15" fontWeight="bold" fill="white">Deploy Protocol</text>
+                            <text x="80" y="65" textAnchor="middle" fontSize="11" fill="#CCC">Yield & Collateral</text>
+                        </g>
+
+                        {/* Arrow 2 */}
+                        <line x1="360" y1="70" x2="390" y2="70" stroke="#1A1A1A" strokeWidth="1.5" markerEnd="url(#arrowhead)" />
+
+                        {/* Step 3: Neobank */}
+                        <g transform="translate(400, 30)">
+                            <rect x="0" y="0" width="140" height="80" rx="4" fill="white" stroke="#1A1A1A" strokeWidth="1.5" />
+                            <text x="70" y="35" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#1A1A1A">Neobank</text>
+                            <text x="70" y="55" textAnchor="middle" fontSize="11" fill="#666">Spend, Borrow, Save</text>
+                        </g>
+                    </svg>
+                    <figcaption className="text-center text-sm text-paper-muted p-4 border-t border-paper-border font-medium">Figure 1: The Deploy Neobank Flow</figcaption>
                 </figure>
             </div>
         </Section>
