@@ -5,10 +5,7 @@ const Transparency = () => {
     return (
         <Section id="transparency" subtitle="7. Transparency" title="Transparency Engineered, Not Marketed">
             <p className="mb-8">
-                Institutions and high-net-worth individuals do not trust marketing. They trust verifiable data.
-            </p>
-            <p className="mb-8">
-                Within weeks of this litepaper’s publication, Deploy will ship:
+                Institutions and high net worth individuals do not trust marketing. They trust verifiable data. That is why transparency is not a future roadmap item—it is live today.
             </p>
 
             <div className="space-y-6 mb-12">
@@ -17,8 +14,8 @@ const Transparency = () => {
                         <div className="w-3 h-3 rounded-full bg-paper-accent"></div>
                     </div>
                     <div>
-                        <h4 className="font-bold">Real-Time Public Dashboard</h4>
-                        <p className="text-paper-muted text-sm">Showing exact fund locations, yield attribution, and distribution mechanics.</p>
+                        <h4 className="font-bold">Real-Time Performance Dashboard</h4>
+                        <p className="text-paper-muted text-sm">We provide a live, granular dashboard showing exact fund locations, yield attribution, and performance metrics in real time.</p>
                     </div>
                 </div>
                 <div className="flex gap-4 items-start">
@@ -26,8 +23,10 @@ const Transparency = () => {
                         <div className="w-3 h-3 rounded-full bg-paper-accent"></div>
                     </div>
                     <div>
-                        <h4 className="font-bold">Third-Party Attestations</h4>
-                        <p className="text-paper-muted text-sm">Regular reports from top-tier accounting firms.</p>
+                        <h4 className="font-bold">Verifiable On-Chain Trading</h4>
+                        <p className="text-paper-muted text-sm">
+                            Users can independently verify every single trade and transaction on-chain using explorers like <a href="https://hypurrscan.io/" target="_blank" rel="noopener noreferrer" className="underline hover:text-paper-text">Hypurrscan</a>.
+                        </p>
                     </div>
                 </div>
                 <div className="flex gap-4 items-start">
@@ -35,8 +34,8 @@ const Transparency = () => {
                         <div className="w-3 h-3 rounded-full bg-paper-accent"></div>
                     </div>
                     <div>
-                        <h4 className="font-bold">On-Chain Proofs</h4>
-                        <p className="text-paper-muted text-sm">Cryptographic proofs of every automated trade.</p>
+                        <h4 className="font-bold">True Self-Custody</h4>
+                        <p className="text-paper-muted text-sm">Your funds remain yours. Users can export their wallet to any other interface and access their assets instantly, even if Deploy ceases to exist.</p>
                     </div>
                 </div>
             </div>
