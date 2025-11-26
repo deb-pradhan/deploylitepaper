@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, TrendingUp, Users, ArrowRight, Lock, Activity, Globe, ChevronRight } from 'lucide-react';
+import { Shield, TrendingUp, Users, ArrowRight, Lock, Activity, Globe, ChevronRight, Layers, Landmark } from 'lucide-react';
 
 // --- Assets & Data ---
 const SLIDES = [
@@ -10,7 +10,9 @@ const SLIDES = [
     'Traction',
     'Performance',
     'Market',
+    'Integration',
     'Team',
+    'Roadmap',
     'Ask'
 ];
 
@@ -388,6 +390,72 @@ const MarketSlide = () => (
     </SlideContainer>
 );
 
+const IntegrationSlide = () => (
+    <SlideContainer>
+        <div className="w-full max-w-7xl z-10 flex flex-col items-center">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center mb-20"
+            >
+                <div className="text-indigo-600 font-mono text-sm tracking-[0.2em] uppercase mb-4">06. Integration</div>
+                <h2 className="text-5xl md:text-7xl font-light tracking-tighter text-slate-900 mb-6">
+                    Yield as a <span className="font-semibold">Service</span>
+                </h2>
+                <p className="text-xl text-slate-500 font-light max-w-2xl mx-auto leading-relaxed">
+                    The flywheel that scales to billions. White-label high-yield savings and collateral for the entire ecosystem.
+                </p>
+            </motion.div>
+
+            <div className="relative w-full max-w-5xl h-[500px] flex items-center justify-center">
+                {/* Connecting Lines */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
+                     {/* Top Left Line */}
+                    <motion.line x1="50%" y1="50%" x2="25%" y2="20%" stroke="#cbd5e1" strokeWidth="1" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1, delay: 0.5 }} />
+                     {/* Top Right Line */}
+                    <motion.line x1="50%" y1="50%" x2="75%" y2="20%" stroke="#cbd5e1" strokeWidth="1" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1, delay: 0.5 }} />
+                     {/* Bottom Left Line */}
+                    <motion.line x1="50%" y1="50%" x2="25%" y2="80%" stroke="#cbd5e1" strokeWidth="1" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1, delay: 0.5 }} />
+                     {/* Bottom Right Line */}
+                    <motion.line x1="50%" y1="50%" x2="75%" y2="80%" stroke="#cbd5e1" strokeWidth="1" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1, delay: 0.5 }} />
+                </svg>
+
+                {/* Central Hub */}
+                <motion.div
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.8, ease: "backOut" }}
+                    className="absolute z-20 w-64 h-64 rounded-full bg-indigo-600 flex flex-col items-center justify-center text-white shadow-[0_0_80px_rgba(70,77,240,0.4)]"
+                >
+                    <div className="absolute inset-0 rounded-full border border-white/20 animate-[ping_3s_cubic-bezier(0,0,0.2,1)_infinite]" />
+                    <Activity className="w-12 h-12 mb-4" />
+                    <div className="text-2xl font-bold tracking-tight">Execution</div>
+                    <div className="text-2xl font-bold tracking-tight">Engine</div>
+                </motion.div>
+
+                {/* Satellites */}
+                {[
+                    { title: "Lending Protocols", icon: Layers, pos: "top-10 left-[15%]" },
+                    { title: "Payment Fintechs", icon: Globe, pos: "top-10 right-[15%]" },
+                    { title: "Institutions", icon: Landmark, pos: "bottom-10 left-[15%]" },
+                    { title: "Enterprise", icon: Shield, pos: "bottom-10 right-[15%]" },
+                ].map((item, i) => (
+                    <motion.div
+                        key={item.title}
+                        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ delay: 0.8 + (i * 0.1), duration: 0.5 }}
+                        className={`absolute ${item.pos} w-64 p-8 bg-white rounded-2xl shadow-lg border border-slate-100 flex flex-col items-center text-center z-10 hover:-translate-y-1 transition-transform duration-300`}
+                    >
+                        <item.icon className="w-10 h-10 text-slate-400 mb-4 stroke-[1.5]" />
+                        <div className="font-medium text-slate-900 text-lg">{item.title}</div>
+                    </motion.div>
+                ))}
+            </div>
+        </div>
+    </SlideContainer>
+);
+
 const TeamSlide = () => (
     <SlideContainer>
         <Orb className="bg-indigo-50 w-[800px] h-[800px] -top-40 left-1/2 -translate-x-1/2" />
@@ -414,6 +482,48 @@ const TeamSlide = () => (
                     <p className="text-slate-500 leading-relaxed text-sm font-light">{member.bio}</p>
                 </motion.div>
             ))}
+        </div>
+    </SlideContainer>
+);
+
+const RoadmapSlide = () => (
+    <SlideContainer>
+        <div className="w-full max-w-7xl z-10">
+            <div className="text-center mb-24">
+                 <div className="text-indigo-600 font-mono text-sm tracking-[0.2em] uppercase mb-4">08. Roadmap</div>
+                <h2 className="text-5xl md:text-7xl font-light tracking-tighter text-slate-900">
+                    Scale to <span className="font-semibold">Billions</span>
+                </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                {[
+                    { date: "Dec 2025", title: "DUSD Public Launch", desc: "Ethereum mainnet. Pre-deposit commitments." },
+                    { date: "Q1 2026", title: "Transparency Suite", desc: "Full dashboard & third-party attestations." },
+                    { date: "Q2 2026", title: "Integrations", desc: "Lending protocols & Debit card spending." },
+                    { date: "2026-27", title: "Enterprise", desc: "Privacy layers & Canton Network." },
+                ].map((item, i) => (
+                    <motion.div
+                        key={item.title}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.2, duration: 0.8 }}
+                        className="relative pt-8"
+                    >
+                        <div className="absolute top-0 left-0 w-full h-0.5 bg-indigo-100 rounded-full overflow-hidden">
+                            <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: "100%" }}
+                                transition={{ duration: 1, delay: 0.5 + (i * 0.2) }}
+                                className="h-full bg-indigo-600"
+                            />
+                        </div>
+                        <div className="text-indigo-600 font-bold mb-4 font-mono text-sm tracking-wider">{item.date}</div>
+                        <h3 className="text-2xl font-medium text-slate-900 mb-4 leading-tight">{item.title}</h3>
+                        <p className="text-slate-500 text-sm leading-relaxed pr-4">{item.desc}</p>
+                    </motion.div>
+                ))}
+            </div>
         </div>
     </SlideContainer>
 );
@@ -514,7 +624,9 @@ export default function DeployPitchDeck() {
         TractionSlide,
         PerformanceSlide,
         MarketSlide,
+        IntegrationSlide,
         TeamSlide,
+        RoadmapSlide,
         AskSlide
     ][currentSlide];
 
