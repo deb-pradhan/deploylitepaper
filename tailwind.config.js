@@ -7,18 +7,30 @@ export default {
     theme: {
         extend: {
             colors: {
-                slate: {
-                    50: '#f8fafc',
-                    500: '#64748b',
-                    900: '#0f172a',
-                },
-                indigo: {
-                    DEFAULT: '#464df0', // Vibrant Indigo from spec
+                bone: '#F5F5F5',
+                black: '#000000',
+                accent: {
+                    DEFAULT: '#0047FF', // Hyper-Blue
+                    hover: '#0033CC',
                 }
             },
             fontFamily: {
-                sans: ['Inter', 'sans-serif'],
+                serif: ['Playfair Display', 'serif'],
                 mono: ['JetBrains Mono', 'monospace'],
+            },
+            borderRadius: {
+                DEFAULT: '0px',
+                'none': '0px',
+                'sm': '0px',
+                'md': '0px',
+                'lg': '0px',
+                'xl': '0px',
+                '2xl': '0px',
+                '3xl': '0px',
+                'full': '0px', 
+            },
+            borderWidth: {
+                DEFAULT: '1px',
             }
         }
     },

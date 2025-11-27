@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, TrendingUp, Users, ArrowRight, Lock, Activity, Globe, ChevronRight, Layers, Landmark } from 'lucide-react';
+import { Shield, TrendingUp, Users, ArrowRight, Lock, Activity, Globe, ChevronRight, Layers, Landmark, Code, Terminal, Zap } from 'lucide-react';
 
 // --- Assets & Data ---
 const SLIDES = [
@@ -19,56 +19,26 @@ const SLIDES = [
 // --- Shared Components ---
 
 const NoiseOverlay = () => (
-    <div className="fixed inset-0 pointer-events-none z-50 opacity-[0.03] mix-blend-overlay"
-        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
-    />
+    <div className="noise-overlay" />
 );
 
-const MathBackground = () => (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-[0.03]">
-        {[...Array(20)].map((_, i) => (
-            <motion.div
-                key={i}
-                className="absolute text-slate-900 font-mono text-xs"
-                initial={{ x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight, opacity: 0 }}
-                animate={{
-                    y: [null, Math.random() * -100],
-                    opacity: [0, 0.5, 0]
-                }}
-                transition={{
-                    duration: Math.random() * 10 + 10,
-                    repeat: Infinity,
-                    ease: "linear",
-                    delay: Math.random() * 5
-                }}
-            >
-                {['∫', '∑', '∂', '∆', 'π', '∞', '√', '≈', '≠', '≤'][Math.floor(Math.random() * 10)]}
-            </motion.div>
-        ))}
+const GridBackground = () => (
+    <div className="fixed inset-0 pointer-events-none z-0">
+        {/* Vertical Lines */}
+        <div className="absolute inset-0 flex justify-between px-8 md:px-24">
+                <div className="w-px h-full bg-black opacity-10" />
+                <div className="w-px h-full bg-black opacity-10" />
+                <div className="w-px h-full bg-black hidden md:block opacity-10" />
+                <div className="w-px h-full bg-black hidden md:block opacity-10" />
+                <div className="w-px h-full bg-black opacity-10" />
+                <div className="w-px h-full bg-black opacity-10" />
+        </div>
+        {/* Horizontal Lines are handled per section for that "architectural" feel */}
     </div>
 );
 
-const Orb = ({ className, delay = 0 }) => (
-    <motion.div
-        className={`absolute rounded-full blur-[120px] opacity-20 pointer-events-none ${className}`}
-        animate={{
-            scale: [1, 1.1, 1],
-            opacity: [0.15, 0.25, 0.15],
-            x: [0, 20, 0],
-            y: [0, -20, 0],
-        }}
-        transition={{
-            duration: 15,
-            delay: delay,
-            repeat: Infinity,
-            ease: "easeInOut"
-        }}
-    />
-);
-
 const SlideContainer = ({ children, className = "" }) => (
-    <div className={`relative w-full h-screen flex flex-col justify-center items-center px-8 md:px-24 overflow-hidden ${className}`}>
-        <MathBackground />
+    <div className={`relative w-full h-screen flex flex-col justify-center items-center px-8 md:px-24 overflow-hidden bg-bone ${className}`}>
         {children}
     </div>
 );
@@ -80,111 +50,137 @@ const AnimatedNumber = ({ value, prefix = "", suffix = "" }) => {
         let start = 0;
         const end = parseFloat(value);
         if (start === end) return;
-
-        let totalDuration = 2000;
-        let incrementTime = (totalDuration / end) * 5; // speed up
-
-        // Simple count up for demo purposes
+        
         let timer = setInterval(() => {
-            start += 1;
-            setDisplayValue(String(start));
+            start += end / 40; 
             if (start >= end) {
+                start = end;
                 clearInterval(timer);
-                setDisplayValue(value); // Ensure exact final value
             }
-        }, 10);
+            setDisplayValue(start.toFixed(value % 1 === 0 ? 0 : 1));
+        }, 25);
 
         return () => clearInterval(timer);
     }, [value]);
 
-    return <span className="tabular-nums">{prefix}{displayValue}{suffix}</span>;
+    return <span className="tabular-nums tracking-tighter">{prefix}{displayValue}{suffix}</span>;
 };
+
+const SectionHeader = ({ number, title, subtitle }) => (
+    <div className="flex flex-col md:flex-row items-baseline gap-6 border-b border-black pb-4 mb-12 w-full max-w-6xl relative">
+        <div className="text-accent font-mono font-bold text-sm tracking-widest uppercase">
+            {number}
+        </div>
+        <h2 className="text-5xl md:text-6xl font-serif text-black leading-[0.9]">
+            {title}
+        </h2>
+        {subtitle && (
+             <div className="md:ml-auto max-w-sm text-xs font-mono text-black/60 leading-relaxed uppercase tracking-wide">
+                {subtitle}
+             </div>
+        )}
+        {/* Hatch pattern bar */}
+        <div className="absolute bottom-[-4px] left-0 w-full h-1 bg-hatch" />
+    </div>
+);
+
+const Button = ({ children, variant = 'primary', className = '' }) => (
+    <button className={`
+        px-8 py-4 text-sm font-mono font-bold uppercase tracking-wider transition-all
+        ${variant === 'primary' 
+            ? 'bg-accent text-white border border-accent hover:bg-black hover:border-black' 
+            : 'bg-transparent text-black border border-black hover:bg-black hover:text-white'}
+        ${className}
+    `}>
+        {children}
+    </button>
+);
 
 // --- Slides ---
 
 const CoverSlide = () => (
     <SlideContainer>
-        <Orb className="bg-indigo-500 w-[800px] h-[800px] -top-60 -right-60" />
-        <Orb className="bg-slate-300 w-[600px] h-[600px] bottom-0 left-0" delay={2} />
-
-        <motion.div
-            initial={{ scale: 0.95, opacity: 0, filter: "blur(10px)" }}
-            animate={{ scale: 1, opacity: 1, filter: "blur(0px)" }}
-            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-            className="relative z-10 flex flex-col items-center text-center"
-        >
-            <motion.img
-                src="/deploy_logo.png"
-                alt="Deploy Logo"
-                className="h-24 md:h-32 mb-12 drop-shadow-2xl"
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2, duration: 1 }}
-            />
-
-            <h2 className="text-3xl md:text-5xl font-extralight text-slate-800 tracking-tight mb-8">
-                The Neobank for the <span className="font-normal text-indigo-600">Digital Age</span>
-            </h2>
-            <div className="flex items-center gap-4">
-                <div className="h-px w-12 bg-indigo-200" />
-                <p className="font-mono text-xs md:text-sm text-slate-400 tracking-[0.4em] uppercase">
-                    Infrastructure, not speculation
-                </p>
-                <div className="h-px w-12 bg-indigo-200" />
+        <div className="relative z-10 w-full max-w-6xl border-t border-b border-black py-24">
+            <div className="absolute top-0 left-0 w-full h-2 bg-hatch" />
+            
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+                <div className="col-span-8">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8 }}
+                    >
+                        <div className="flex items-center gap-4 mb-8">
+                             <div className="w-4 h-4 bg-accent" />
+                             <span className="font-mono text-sm tracking-widest uppercase">Deploy.Finance</span>
+                        </div>
+                        
+                        <h1 className="text-7xl md:text-9xl font-serif text-black leading-[0.85] mb-12">
+                            The Neobank <br/>
+                            <span className="text-accent italic pr-4">Digital</span> Age.
+                        </h1>
+                        
+                        <p className="text-lg font-mono text-black max-w-xl leading-relaxed border-l-2 border-accent pl-6">
+                            Infrastructure, not speculation. Building the financial layer for the next generation of the internet.
+                        </p>
+                    </motion.div>
+                </div>
+                
+                <div className="col-span-4 flex flex-col justify-end items-start md:items-end gap-4">
+                    <div className="text-right font-mono text-xs uppercase tracking-widest mb-8 hidden md:block">
+                        Series A <br/> Pitch Deck <br/> 2025
+                    </div>
+                    <Button variant="primary">Read Manifesto</Button>
+                    <Button variant="outline">Contact Us</Button>
+                </div>
             </div>
-        </motion.div>
+            
+            <div className="absolute bottom-0 left-0 w-full h-2 bg-hatch" />
+        </div>
     </SlideContainer>
 );
 
 const ProblemSlide = () => (
     <SlideContainer>
-        <Orb className="bg-slate-200 w-[600px] h-[600px] top-20 left-20" />
-        <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-24 items-center z-10">
-            <div>
-                <motion.h2
-                    initial={{ y: 30, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 1, ease: "easeOut" }}
-                    className="text-6xl md:text-8xl font-thin tracking-tighter text-slate-900 mb-8 leading-[0.9]"
-                >
-                    The <span className="font-semibold">$1 Trillion</span> <br /> Inefficiency.
-                </motion.h2>
-                <motion.p
-                    initial={{ y: 30, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.2, duration: 1 }}
-                    className="text-xl md:text-2xl text-slate-500 leading-relaxed font-light"
-                >
-                    Capital efficiency in crypto is broken. While traditional finance optimizes every basis point, the digital asset economy leaves massive value on the table.
-                </motion.p>
+        <SectionHeader number="01" title="The Inefficiency" subtitle="Capital efficiency in crypto is broken." />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-black w-full max-w-6xl border border-black">
+            <div className="bg-bone p-12 md:p-16 flex flex-col justify-between min-h-[400px] border-b md:border-b-0 md:border-r border-black">
+                <div className="font-serif text-4xl leading-tight text-black">
+                    While traditional finance optimizes every basis point, digital assets leave <span className="text-accent italic font-medium">$1 Trillion</span> on the table.
+                </div>
+                <div className="font-mono text-xs uppercase tracking-widest mt-12 text-black font-bold">
+                    Status: Critical Failure
+                </div>
             </div>
-
-            <div className="relative h-[500px] w-full flex items-end justify-center pb-12">
-                {/* Idle Capital */}
-                <motion.div
-                    initial={{ height: 0 }}
-                    animate={{ height: "80%" }}
-                    transition={{ duration: 1.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                    className="w-40 bg-slate-100 rounded-t-sm relative group overflow-hidden border border-slate-200"
-                >
-                    {/* Micro-animation: subtle pattern move */}
-                    <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:8px_8px]" />
-                    <div className="absolute top-6 left-1/2 -translate-x-1/2 text-slate-400 font-medium tracking-widest text-xs uppercase">Idle</div>
-                </motion.div>
-
-                {/* Productive Capital */}
-                <motion.div
-                    initial={{ height: 0 }}
-                    animate={{ height: "20%" }}
-                    transition={{ duration: 1.5, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                    className="w-40 bg-indigo-600 rounded-t-sm ml-8 relative shadow-[0_0_60px_-10px_rgba(70,77,240,0.5)] overflow-hidden"
-                >
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                    <div className="absolute -top-20 left-1/2 -translate-x-1/2 text-indigo-600 font-bold text-7xl tracking-tighter">
-                        <AnimatedNumber value={80} suffix="%" />
-                    </div>
-                    <div className="absolute top-6 left-1/2 -translate-x-1/2 text-white/90 font-medium text-xs tracking-widest uppercase">Productive</div>
-                </motion.div>
+            
+            <div className="bg-bone p-12 md:p-16 relative overflow-hidden flex items-end justify-center">
+                <div className="absolute inset-0 bg-halftone opacity-20" />
+                
+                <div className="relative flex items-end gap-8 w-full max-w-sm h-64 border-b border-black pb-px">
+                    {/* Idle Bar */}
+                    <motion.div 
+                        initial={{ height: 0 }}
+                        animate={{ height: "80%" }}
+                        transition={{ duration: 1, ease: "circOut" }}
+                        className="w-1/2 bg-black/10 border border-black border-b-0 relative"
+                    >
+                        <div className="absolute -top-8 left-0 font-mono text-xs">IDLE</div>
+                    </motion.div>
+                    
+                    {/* Active Bar */}
+                    <motion.div 
+                        initial={{ height: 0 }}
+                        animate={{ height: "20%" }}
+                        transition={{ duration: 1, ease: "circOut", delay: 0.2 }}
+                        className="w-1/2 bg-accent border border-black border-b-0 relative"
+                    >
+                        <div className="absolute -top-12 left-0 font-mono text-4xl font-bold text-accent">
+                           <AnimatedNumber value={80} suffix="%" />
+                        </div>
+                         <div className="absolute -top-8 left-0 font-mono text-xs text-accent">ACTIVE</div>
+                    </motion.div>
+                </div>
             </div>
         </div>
     </SlideContainer>
@@ -192,144 +188,106 @@ const ProblemSlide = () => (
 
 const SolutionSlide = () => (
     <SlideContainer>
-        <Orb className="bg-indigo-50 w-[900px] h-[900px] -bottom-40 left-1/2 -translate-x-1/2" />
-        <div className="text-center mb-24 z-10">
-            <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-5xl md:text-7xl font-light tracking-tighter text-slate-900 mb-6"
-            >
-                The Autonomous <span className="font-semibold">Yield Engine</span>
-            </motion.h2>
-            <p className="text-xl text-slate-500 font-light tracking-wide">Delta-Neutral strategies. Zero directional risk.</p>
-        </div>
-
-        <div className="flex items-center justify-center w-full max-w-6xl z-10">
+        <SectionHeader number="02" title="Autonomous Yield" subtitle="Delta-Neutral strategies. Zero directional risk." />
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 w-full max-w-6xl border-l border-black">
             {['Deposit', 'Auto-Hedge', 'D-Assets'].map((step, i) => (
-                <React.Fragment key={step}>
-                    <motion.div
-                        initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                        animate={{ scale: 1, opacity: 1, y: 0 }}
-                        whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.1)" }}
-                        transition={{ delay: i * 0.2, duration: 0.8 }}
-                        className="w-64 h-40 bg-white/80 backdrop-blur-xl border border-white/60 rounded-xl flex flex-col items-center justify-center shadow-sm z-10 group cursor-default"
-                    >
-                        <span className="font-light text-3xl text-slate-800 tracking-tight group-hover:text-indigo-600 transition-colors">{step}</span>
-                        {/* Micro-interaction: line appears on hover */}
-                        <div className="h-px w-0 bg-indigo-600 mt-2 transition-all duration-300 group-hover:w-12" />
-                    </motion.div>
-                    {i < 2 && (
-                        <div className="relative w-24 h-px bg-slate-200 overflow-hidden">
-                            <motion.div
-                                initial={{ x: "-100%" }}
-                                animate={{ x: "100%" }}
-                                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                                className="absolute inset-0 bg-indigo-500 w-1/2"
-                            />
-                        </div>
-                    )}
-                </React.Fragment>
+                    <div key={step} className="group border-r border-y border-black p-10 bg-bone hover:bg-black hover:text-white transition-colors duration-300 relative">
+                    <div className="font-mono text-xs mb-8 opacity-70 group-hover:opacity-100">STEP 0{i + 1}</div>
+                    <div className="mb-12 text-black group-hover:text-white">
+                        {i === 0 && <Landmark className="w-12 h-12 stroke-1" />}
+                        {i === 1 && <Code className="w-12 h-12 stroke-1" />}
+                        {i === 2 && <Layers className="w-12 h-12 stroke-1" />}
+                    </div>
+                    <h3 className="font-serif text-3xl mb-4 italic text-black group-hover:text-white">{step}</h3>
+                    <p className="font-mono text-xs leading-relaxed opacity-90 group-hover:opacity-100 text-black group-hover:text-white">
+                         {i === 0 ? "Capital enters secure vault system via smart contracts." : 
+                          i === 1 ? "Algorithms balance risk across venues instantly." : 
+                          "Receive tokenized assets representing your position."}
+                    </p>
+                    <div className="absolute bottom-0 left-0 w-full h-1 bg-accent scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                </div>
             ))}
         </div>
     </SlideContainer>
 );
 
-const TractionSlide = () => {
-    const stats = [
-        { label: "TVL", value: "15", prefix: "$", suffix: "M" },
-        { label: "Yield Dist.", value: "1.6", prefix: "$", suffix: "M" },
-        { label: "Commitments", value: "80", prefix: "$", suffix: "M" },
-        { label: "Wallets", value: "2000", prefix: "", suffix: "+" },
-    ];
-
-    return (
-        <SlideContainer>
-            <Orb className="bg-slate-100 w-[700px] h-[700px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-            <h2 className="text-5xl md:text-7xl font-light tracking-tighter text-slate-900 mb-24 text-center z-10">
-                Battle <span className="font-semibold">Tested</span>
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 w-full max-w-7xl z-10">
-                {stats.map((stat, i) => (
-                    <motion.div
-                        key={stat.label}
-                        initial={{ y: 40, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        whileHover={{ scale: 1.02, backgroundColor: "rgba(255, 255, 255, 0.8)" }}
-                        transition={{ delay: i * 0.1, duration: 0.8 }}
-                        className={`p-10 rounded-2xl border backdrop-blur-md transition-all duration-500 ${stat.label === "TVL"
-                                ? 'border-indigo-100 bg-indigo-50/60'
-                                : 'border-white/60 bg-white/40'
-                            } text-center group`}
-                    >
-                        <div className={`text-4xl md:text-5xl font-light mb-4 tracking-tighter ${stat.label === "TVL" ? 'text-indigo-600' : 'text-slate-900'}`}>
+const TractionSlide = () => (
+    <SlideContainer>
+        <SectionHeader number="03" title="Traction" subtitle="Live Metrics. Updated Daily." />
+        
+        <div className="w-full max-w-6xl border border-black bg-white">
+            <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-black">
+                 {[
+                    { label: "TVL", value: "15", prefix: "$", suffix: "M" },
+                    { label: "Yield Dist.", value: "1.6", prefix: "$", suffix: "M" },
+                    { label: "Commitments", value: "80", prefix: "$", suffix: "M" },
+                    { label: "Wallets", value: "2000", prefix: "", suffix: "+" },
+                ].map((stat, i) => (
+                    <div key={stat.label} className="p-12 text-center hover:bg-accent hover:text-white transition-colors group">
+                        <div className="font-serif text-5xl md:text-6xl mb-4 text-black group-hover:text-white transition-colors">
                             <AnimatedNumber value={stat.value} prefix={stat.prefix} suffix={stat.suffix} />
                         </div>
-                        <div className="text-slate-400 font-medium uppercase tracking-widest text-xs group-hover:text-indigo-500 transition-colors">
+                        <div className="font-mono text-xs uppercase tracking-[0.2em] border-t border-black/20 pt-4 inline-block group-hover:border-white/40 text-black group-hover:text-white transition-colors">
                             {stat.label}
                         </div>
-                    </motion.div>
+                    </div>
                 ))}
             </div>
-        </SlideContainer>
-    );
-};
+        </div>
+    </SlideContainer>
+);
 
 const PerformanceSlide = () => (
     <SlideContainer>
-        <div className="max-w-6xl w-full z-10">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-                <div>
-                    <h2 className="text-5xl md:text-7xl font-light tracking-tighter text-slate-900 mb-6">
-                        Proven <span className="font-semibold">Performance</span>
-                    </h2>
-                    <p className="text-xl text-slate-500 mb-12 font-light tracking-wide">Industry leading returns built to withstand every market cycle.</p>
-
-                    <div className="grid grid-cols-2 gap-8">
+        <SectionHeader number="04" title="Performance" subtitle="Proven returns across market cycles." />
+        
+        <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 border border-black">
+            <div className="p-12 border-b md:border-b-0 md:border-r border-black bg-hatch relative">
+                 <div className="absolute inset-0 bg-bone opacity-90" /> {/* Fade hatch */}
+                 <div className="relative z-10">
+                     <div className="flex items-end justify-between mb-16 border-b border-black pb-8">
                         <div>
-                            <div className="text-4xl font-light text-indigo-600 mb-2">22.6%</div>
-                            <div className="text-xs uppercase tracking-widest text-slate-400">Average APY</div>
+                            <div className="text-6xl font-serif text-accent mb-2">22.6%</div>
+                            <div className="font-mono text-xs uppercase">Average APY</div>
+                        </div>
+                        <TrendingUp className="w-12 h-12 text-black stroke-1" />
+                     </div>
+                     
+                     <div className="grid grid-cols-2 gap-8">
+                        <div>
+                             <div className="text-2xl font-mono">6.1</div>
+                             <div className="text-xs font-mono uppercase opacity-60 mt-1">Sharpe Ratio</div>
                         </div>
                         <div>
-                            <div className="text-4xl font-light text-slate-900 mb-2">53.4%</div>
-                            <div className="text-xs uppercase tracking-widest text-slate-400">Peak Daily APY</div>
+                             <div className="text-2xl font-mono">&lt;2%</div>
+                             <div className="text-xs font-mono uppercase opacity-60 mt-1">Max Drawdown</div>
                         </div>
-                        <div>
-                            <div className="text-4xl font-light text-slate-900 mb-2">6.1</div>
-                            <div className="text-xs uppercase tracking-widest text-slate-400">Sharpe Ratio</div>
+                     </div>
+                 </div>
+            </div>
+            
+            <div className="p-12 flex flex-col justify-center space-y-8 bg-bone">
+                {[
+                    { name: "Deploy", val: 22.6, width: "90%" },
+                    { name: "Ethena", val: 7.6, width: "30%" },
+                    { name: "Resolv", val: 7.0, width: "28%" },
+                ].map((item, i) => (
+                    <div key={item.name} className="group">
+                        <div className="flex justify-between mb-2 font-mono text-xs uppercase">
+                            <span>{item.name}</span>
+                            <span>{item.val}%</span>
                         </div>
-                        <div>
-                            <div className="text-4xl font-light text-slate-900 mb-2">&lt;2%</div>
-                            <div className="text-xs uppercase tracking-widest text-slate-400">Max Drawdown</div>
+                        <div className="h-4 border border-black p-0.5">
+                            <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: item.width }}
+                                transition={{ duration: 1, delay: 0.5 + (i * 0.2) }}
+                                className={`h-full ${item.name === "Deploy" ? "bg-accent" : "bg-black/20"}`}
+                            />
                         </div>
                     </div>
-                </div>
-
-                <div className="space-y-8">
-                    {[
-                        { name: "Deploy", val: 22.6, color: "bg-indigo-600", width: "90%" },
-                        { name: "Ethena", val: 7.6, color: "bg-slate-200", width: "30%" },
-                        { name: "Resolv", val: 7.0, color: "bg-slate-200", width: "28%" },
-                    ].map((item, i) => (
-                        <div key={item.name} className="flex items-center gap-8 group">
-                            <div className="w-24 font-medium text-lg text-slate-900">{item.name}</div>
-                            <div className="flex-1 h-10 bg-white rounded-full overflow-hidden relative shadow-sm border border-slate-100">
-                                <motion.div
-                                    initial={{ width: 0 }}
-                                    animate={{ width: item.width }}
-                                    transition={{ duration: 1.5, delay: 0.2 + (i * 0.1), ease: [0.22, 1, 0.36, 1] }}
-                                    className={`h-full ${item.color} relative`}
-                                >
-                                    {item.name === "Deploy" && (
-                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_2s_infinite]" />
-                                    )}
-                                </motion.div>
-                            </div>
-                            <div className={`w-24 font-mono text-2xl font-light ${item.name === "Deploy" ? "text-indigo-600" : "text-slate-300"}`}>
-                                {item.val}%
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                ))}
             </div>
         </div>
     </SlideContainer>
@@ -337,54 +295,38 @@ const PerformanceSlide = () => (
 
 const MarketSlide = () => (
     <SlideContainer>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-24 items-center w-full max-w-7xl z-10">
-            <div>
-                <h2 className="text-6xl md:text-8xl font-thin tracking-tighter text-slate-900 mb-12">
-                    The <span className="font-semibold">Scale</span>
-                </h2>
-                <div className="space-y-8">
-                    <div className="flex items-baseline gap-6 group">
-                        <span className="text-5xl font-light text-slate-900 tracking-tighter group-hover:text-indigo-600 transition-colors">$1.6T</span>
-                        <span className="text-slate-400 text-sm uppercase tracking-widest">Total Addressable Market</span>
-                    </div>
-                    <div className="flex items-baseline gap-6 group">
-                        <span className="text-5xl font-light text-slate-900 tracking-tighter group-hover:text-indigo-600 transition-colors">$100B</span>
-                        <span className="text-slate-400 text-sm uppercase tracking-widest">Serviceable Market</span>
-                    </div>
-                    <div className="flex items-baseline gap-6 group">
-                        <span className="text-5xl font-medium text-indigo-600 tracking-tighter">$5B</span>
-                        <span className="text-slate-400 text-sm uppercase tracking-widest">Obtainable Market</span>
-                    </div>
+        <SectionHeader number="05" title="The Scale" subtitle="Addressable Market Analysis" />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-6xl">
+            <div className="border-l border-black pl-8 space-y-12">
+                <div>
+                    <div className="text-6xl font-light mb-2">$1.6T</div>
+                    <div className="font-mono text-xs uppercase tracking-widest bg-black text-white inline-block px-2 py-1">Total Addressable</div>
                 </div>
-                <div className="mt-16 p-8 bg-white/60 backdrop-blur-md rounded-xl border-l-2 border-indigo-500 shadow-sm">
-                    <div className="text-xs text-slate-400 uppercase tracking-widest mb-2">Revenue Goal</div>
-                    <div className="text-3xl font-light text-slate-900">$100M ARR by Year 3</div>
+                <div>
+                    <div className="text-6xl font-light mb-2 opacity-40">$100B</div>
+                    <div className="font-mono text-xs uppercase tracking-widest border border-black inline-block px-2 py-1">Serviceable</div>
+                </div>
+                <div>
+                    <div className="text-6xl font-medium text-accent mb-2">$5B</div>
+                    <div className="font-mono text-xs uppercase tracking-widest bg-accent text-white inline-block px-2 py-1">Obtainable</div>
                 </div>
             </div>
-
-            <div className="relative h-[600px] flex items-center justify-center">
-                {/* Concentric Circles Visualization */}
-                <motion.div
-                    initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.2, duration: 1 }}
-                    className="absolute w-[500px] h-[500px] rounded-full border border-slate-200 flex items-center justify-center bg-white/20 backdrop-blur-sm"
-                >
-                    <span className="absolute top-6 text-slate-300 text-xs font-medium tracking-widest">TAM $1.6T</span>
-                    <motion.div
-                        initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.4, duration: 1 }}
-                        className="w-[350px] h-[350px] rounded-full border border-slate-300 flex items-center justify-center bg-slate-50/40 backdrop-blur-md shadow-lg"
-                    >
-                        <span className="absolute top-6 text-slate-400 text-xs font-medium tracking-widest">SAM $100B</span>
-                        <motion.div
-                            initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.6, duration: 1 }}
-                            className="w-[180px] h-[180px] rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-[0_20px_50px_rgba(70,77,240,0.3)]"
-                        >
-                            <div className="text-center">
-                                <div className="font-bold text-2xl">SOM</div>
-                                <div className="text-xs opacity-80 mt-1">$5B</div>
-                            </div>
-                        </motion.div>
-                    </motion.div>
-                </motion.div>
+            
+            <div className="relative h-[400px] border border-black bg-halftone flex items-center justify-center overflow-hidden">
+                {/* Geometric representation instead of circles */}
+                <div className="relative w-64 h-64 border border-black flex items-center justify-center bg-bone">
+                    <span className="absolute top-2 left-2 font-mono text-[10px]">TAM</span>
+                    <div className="w-40 h-40 border border-black flex items-center justify-center bg-bone">
+                        <span className="absolute top-2 left-2 font-mono text-[10px]">SAM</span>
+                        <div className="w-20 h-20 bg-accent flex items-center justify-center border border-black">
+                            <span className="font-bold text-white font-mono">SOM</span>
+                        </div>
+                    </div>
+                </div>
+                {/* Architectural lines */}
+                <div className="absolute top-0 left-1/2 h-full w-px bg-black/20" />
+                <div className="absolute left-0 top-1/2 w-full h-px bg-black/20" />
             </div>
         </div>
     </SlideContainer>
@@ -392,64 +334,38 @@ const MarketSlide = () => (
 
 const IntegrationSlide = () => (
     <SlideContainer>
-        <div className="w-full max-w-7xl z-10 flex flex-col items-center">
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-center mb-20"
-            >
-                <div className="text-indigo-600 font-mono text-sm tracking-[0.2em] uppercase mb-4">06. Integration</div>
-                <h2 className="text-5xl md:text-7xl font-light tracking-tighter text-slate-900 mb-6">
-                    Yield as a <span className="font-semibold">Service</span>
-                </h2>
-                <p className="text-xl text-slate-500 font-light max-w-2xl mx-auto leading-relaxed">
-                    The flywheel that scales to billions. White-label high-yield savings and collateral for the entire ecosystem.
-                </p>
-            </motion.div>
-
-            <div className="relative w-full max-w-5xl h-[500px] flex items-center justify-center">
-                {/* Connecting Lines */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
-                     {/* Top Left Line */}
-                    <motion.line x1="50%" y1="50%" x2="25%" y2="20%" stroke="#cbd5e1" strokeWidth="1" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1, delay: 0.5 }} />
-                     {/* Top Right Line */}
-                    <motion.line x1="50%" y1="50%" x2="75%" y2="20%" stroke="#cbd5e1" strokeWidth="1" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1, delay: 0.5 }} />
-                     {/* Bottom Left Line */}
-                    <motion.line x1="50%" y1="50%" x2="25%" y2="80%" stroke="#cbd5e1" strokeWidth="1" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1, delay: 0.5 }} />
-                     {/* Bottom Right Line */}
-                    <motion.line x1="50%" y1="50%" x2="75%" y2="80%" stroke="#cbd5e1" strokeWidth="1" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1, delay: 0.5 }} />
-                </svg>
-
+        <SectionHeader number="06" title="Integration" subtitle="Yield as a Service Infrastructure" />
+        
+        <div className="relative w-full max-w-5xl h-[500px] border border-black bg-bone">
+            {/* Background Grid */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000008_1px,transparent_1px),linear-gradient(to_bottom,#00000008_1px,transparent_1px)] bg-[size:40px_40px]" />
+            
+            <div className="absolute inset-0 flex items-center justify-center">
                 {/* Central Hub */}
-                <motion.div
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.8, ease: "backOut" }}
-                    className="absolute z-20 w-64 h-64 rounded-full bg-indigo-600 flex flex-col items-center justify-center text-white shadow-[0_0_80px_rgba(70,77,240,0.4)]"
-                >
-                    <div className="absolute inset-0 rounded-full border border-white/20 animate-[ping_3s_cubic-bezier(0,0,0.2,1)_infinite]" />
-                    <Activity className="w-12 h-12 mb-4" />
-                    <div className="text-2xl font-bold tracking-tight">Execution</div>
-                    <div className="text-2xl font-bold tracking-tight">Engine</div>
-                </motion.div>
-
+                <div className="w-64 h-64 border border-black bg-accent flex flex-col items-center justify-center text-white z-10">
+                    <Zap className="w-12 h-12 mb-4 stroke-1" />
+                    <div className="font-serif text-2xl italic text-center">Execution <br/> Engine</div>
+                </div>
+                
+                {/* Connectors */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none">
+                    <line x1="50%" y1="50%" x2="15%" y2="15%" stroke="black" strokeWidth="1" />
+                    <line x1="50%" y1="50%" x2="85%" y2="15%" stroke="black" strokeWidth="1" />
+                    <line x1="50%" y1="50%" x2="15%" y2="85%" stroke="black" strokeWidth="1" />
+                    <line x1="50%" y1="50%" x2="85%" y2="85%" stroke="black" strokeWidth="1" />
+                </svg>
+                
                 {/* Satellites */}
                 {[
-                    { title: "Lending Protocols", icon: Layers, pos: "top-10 left-[15%]" },
-                    { title: "Payment Fintechs", icon: Globe, pos: "top-10 right-[15%]" },
-                    { title: "Institutions", icon: Landmark, pos: "bottom-10 left-[15%]" },
-                    { title: "Enterprise", icon: Shield, pos: "bottom-10 right-[15%]" },
+                    { label: "Lending", icon: Layers, pos: "top-8 left-8" },
+                    { label: "Fintechs", icon: Globe, pos: "top-8 right-8" },
+                    { label: "Institutions", icon: Landmark, pos: "bottom-8 left-8" },
+                    { label: "Enterprise", icon: Shield, pos: "bottom-8 right-8" },
                 ].map((item, i) => (
-                    <motion.div
-                        key={item.title}
-                        initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        transition={{ delay: 0.8 + (i * 0.1), duration: 0.5 }}
-                        className={`absolute ${item.pos} w-64 p-8 bg-white rounded-2xl shadow-lg border border-slate-100 flex flex-col items-center text-center z-10 hover:-translate-y-1 transition-transform duration-300`}
-                    >
-                        <item.icon className="w-10 h-10 text-slate-400 mb-4 stroke-[1.5]" />
-                        <div className="font-medium text-slate-900 text-lg">{item.title}</div>
-                    </motion.div>
+                    <div key={item.label} className={`absolute ${item.pos} w-40 h-32 bg-bone border border-black p-4 flex flex-col justify-between hover:bg-black hover:text-white transition-colors group shadow-lg`}>
+                        <item.icon className="w-6 h-6 stroke-1 text-black group-hover:text-white" />
+                        <div className="font-mono text-sm uppercase tracking-wider text-black group-hover:text-white">{item.label}</div>
+                    </div>
                 ))}
             </div>
         </div>
@@ -458,29 +374,20 @@ const IntegrationSlide = () => (
 
 const TeamSlide = () => (
     <SlideContainer>
-        <Orb className="bg-indigo-50 w-[800px] h-[800px] -top-40 left-1/2 -translate-x-1/2" />
-        <h2 className="text-5xl md:text-7xl font-light tracking-tighter text-slate-900 mb-24 text-center z-10">
-            Built by <span className="font-semibold">Quants</span>
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl w-full z-10">
-            {[
+        <SectionHeader number="07" title="The Team" subtitle="Built by Quants & Engineers" />
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-black w-full max-w-6xl border border-black">
+             {[
                 { name: "Benjamin", role: "Founder & CEO", bio: "Product & Tech Background." },
                 { name: "Ben Lilly", role: "Founder", bio: "DeFi Strategist & Economist." },
                 { name: "Amit Trehan", role: "CTO", bio: "Ex-VP Lloyd's Bank. Security Expert." }
             ].map((member, i) => (
-                <motion.div
-                    key={member.name}
-                    initial={{ y: 40, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    whileHover={{ y: -10 }}
-                    transition={{ delay: i * 0.2, duration: 0.8 }}
-                    className="p-8 rounded-2xl bg-white/70 backdrop-blur-xl border border-white shadow-[0_10px_30px_-10px_rgba(0,0,0,0.05)] hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] transition-all duration-500 group"
-                >
-                    <div className="w-16 h-16 bg-slate-100 rounded-full mb-6 group-hover:scale-110 transition-transform duration-500" />
-                    <h3 className="text-2xl font-light text-slate-900 mb-2">{member.name}</h3>
-                    <div className="text-indigo-600 font-mono text-xs mb-4 uppercase tracking-widest">{member.role}</div>
-                    <p className="text-slate-500 leading-relaxed text-sm font-light">{member.bio}</p>
-                </motion.div>
+                <div key={member.name} className="bg-bone p-12 hover:bg-black hover:text-white transition-colors group">
+                    <div className="w-20 h-20 bg-gray-200 mb-8 grayscale group-hover:grayscale-0 group-hover:bg-white/20" />
+                    <div className="font-serif text-2xl mb-2">{member.name}</div>
+                    <div className="font-mono text-xs uppercase tracking-widest text-accent mb-6">{member.role}</div>
+                    <div className="font-mono text-sm opacity-70 leading-relaxed">{member.bio}</div>
+                </div>
             ))}
         </div>
     </SlideContainer>
@@ -488,91 +395,54 @@ const TeamSlide = () => (
 
 const RoadmapSlide = () => (
     <SlideContainer>
-        <div className="w-full max-w-7xl z-10">
-            <div className="text-center mb-24">
-                 <div className="text-indigo-600 font-mono text-sm tracking-[0.2em] uppercase mb-4">08. Roadmap</div>
-                <h2 className="text-5xl md:text-7xl font-light tracking-tighter text-slate-900">
-                    Scale to <span className="font-semibold">Billions</span>
-                </h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <SectionHeader number="08" title="Roadmap" subtitle="Scale to Billions" />
+        
+        <div className="w-full max-w-6xl border-t border-black pt-12">
+             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 {[
                     { date: "Dec 2025", title: "DUSD Public Launch", desc: "Ethereum mainnet. Pre-deposit commitments." },
                     { date: "Q1 2026", title: "Transparency Suite", desc: "Full dashboard & third-party attestations." },
                     { date: "Q2 2026", title: "Integrations", desc: "Lending protocols & Debit card spending." },
                     { date: "2026-27", title: "Enterprise", desc: "Privacy layers & Canton Network." },
                 ].map((item, i) => (
-                    <motion.div
-                        key={item.title}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.2, duration: 0.8 }}
-                        className="relative pt-8"
-                    >
-                        <div className="absolute top-0 left-0 w-full h-0.5 bg-indigo-100 rounded-full overflow-hidden">
-                            <motion.div
-                                initial={{ width: 0 }}
-                                animate={{ width: "100%" }}
-                                transition={{ duration: 1, delay: 0.5 + (i * 0.2) }}
-                                className="h-full bg-indigo-600"
-                            />
-                        </div>
-                        <div className="text-indigo-600 font-bold mb-4 font-mono text-sm tracking-wider">{item.date}</div>
-                        <h3 className="text-2xl font-medium text-slate-900 mb-4 leading-tight">{item.title}</h3>
-                        <p className="text-slate-500 text-sm leading-relaxed pr-4">{item.desc}</p>
-                    </motion.div>
+                    <div key={item.title} className="relative border-l border-black pl-6 py-2">
+                        <div className="font-mono text-xs bg-black text-white inline-block px-2 py-1 mb-4">{item.date}</div>
+                        <h3 className="font-serif text-xl mb-2">{item.title}</h3>
+                        <p className="font-mono text-xs opacity-60 leading-relaxed">{item.desc}</p>
+                        {/* Node */}
+                        <div className="absolute top-0 left-[-3px] w-[5px] h-[5px] bg-black" />
+                    </div>
                 ))}
-            </div>
+             </div>
         </div>
     </SlideContainer>
 );
 
 const AskSlide = () => (
     <SlideContainer>
-        <Orb className="bg-indigo-500 w-[700px] h-[700px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10" />
-        <div className="text-center max-w-5xl mx-auto z-10">
-            <motion.h2
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 1 }}
-                className="text-7xl md:text-9xl font-thin tracking-tighter text-slate-900 mb-12"
-            >
-                Join the <span className="font-semibold">Era</span>
-            </motion.h2>
-
-            <div className="flex flex-col md:flex-row items-center justify-center gap-16 mb-16">
-                <div className="text-center group">
-                    <div className="text-xs text-slate-400 uppercase tracking-[0.3em] mb-4 group-hover:text-indigo-500 transition-colors">Raising</div>
-                    <div className="text-6xl md:text-7xl font-light text-slate-900 tracking-tight">$5M</div>
-                </div>
-                <div className="h-24 w-px bg-slate-200 hidden md:block" />
-                <div className="text-center group">
-                    <div className="text-xs text-slate-400 uppercase tracking-[0.3em] mb-4 group-hover:text-indigo-500 transition-colors">Valuation</div>
-                    <div className="text-6xl md:text-7xl font-light text-slate-900 tracking-tight">$50M</div>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-8 max-w-2xl mx-auto mb-16">
-                <div className="p-6 bg-white/50 rounded-xl border border-white/60">
-                    <div className="text-xs text-slate-400 uppercase tracking-widest mb-2">Target Close</div>
-                    <div className="text-2xl font-light text-slate-900">Q1 2026</div>
-                </div>
-                <div className="p-6 bg-white/50 rounded-xl border border-white/60">
-                    <div className="text-xs text-slate-400 uppercase tracking-widest mb-2">Commitments</div>
-                    <div className="text-2xl font-light text-slate-900">$75M <span className="text-sm text-slate-400">in dAssets</span></div>
-                </div>
-            </div>
-
-            <motion.a
-                href="mailto:hello@deploy.finance"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center gap-4 bg-indigo-600 text-white px-12 py-6 rounded-full text-xl font-light tracking-wide shadow-[0_20px_50px_-10px_rgba(70,77,240,0.4)] hover:shadow-[0_30px_80px_-10px_rgba(70,77,240,0.5)] transition-all group"
-            >
-                Contact for Allocation
-                <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-            </motion.a>
+        <div className="w-full max-w-5xl border border-black bg-bone p-12 md:p-24 relative overflow-hidden text-center">
+             <div className="absolute top-0 left-0 w-full h-4 bg-hatch" />
+             
+             <h2 className="text-7xl md:text-9xl font-serif text-black mb-16 leading-[0.8]">
+                 Join the <span className="text-accent italic">Era.</span>
+             </h2>
+             
+             <div className="flex flex-col md:flex-row justify-center gap-16 mb-16 border-y border-black py-12">
+                 <div className="text-center">
+                     <div className="font-mono text-xs uppercase tracking-widest mb-2 opacity-50">Raising</div>
+                     <div className="text-6xl font-light text-accent">$5M</div>
+                 </div>
+                 <div className="text-center">
+                     <div className="font-mono text-xs uppercase tracking-widest mb-2 opacity-50">Valuation</div>
+                     <div className="text-6xl font-light text-accent">$50M</div>
+                 </div>
+             </div>
+             
+             <a href="mailto:hello@deploy.finance" className="inline-flex items-center gap-4 bg-accent text-white px-12 py-6 font-mono text-lg font-bold uppercase tracking-widest hover:bg-black transition-colors border border-black">
+                 Contact for Allocation <ArrowRight className="w-6 h-6" />
+             </a>
+             
+             <div className="absolute bottom-0 left-0 w-full h-4 bg-hatch" />
         </div>
     </SlideContainer>
 );
@@ -585,32 +455,25 @@ export default function DeployPitchDeck() {
 
     const handleScroll = useCallback((direction) => {
         if (isScrolling) return;
-
         setIsScrolling(true);
         setCurrentSlide(prev => {
             if (direction === 'next') return Math.min(prev + 1, SLIDES.length - 1);
             if (direction === 'prev') return Math.max(prev - 1, 0);
             return prev;
         });
-
-        setTimeout(() => setIsScrolling(false), 1200); // Increased debounce for weightier feel
+        setTimeout(() => setIsScrolling(false), 800);
     }, [isScrolling]);
 
     useEffect(() => {
         const onWheel = (e) => {
-            if (Math.abs(e.deltaY) > 30) {
-                handleScroll(e.deltaY > 0 ? 'next' : 'prev');
-            }
+            if (Math.abs(e.deltaY) > 30) handleScroll(e.deltaY > 0 ? 'next' : 'prev');
         };
-
         const onKeyDown = (e) => {
             if (e.key === 'ArrowDown' || e.key === 'ArrowRight') handleScroll('next');
             if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') handleScroll('prev');
         };
-
         window.addEventListener('wheel', onWheel);
         window.addEventListener('keydown', onKeyDown);
-
         return () => {
             window.removeEventListener('wheel', onWheel);
             window.removeEventListener('keydown', onKeyDown);
@@ -631,33 +494,53 @@ export default function DeployPitchDeck() {
     ][currentSlide];
 
     return (
-        <div className="bg-slate-50 text-slate-900 font-sans selection:bg-indigo-100 selection:text-indigo-900 h-screen w-screen overflow-hidden">
+        <div className="font-mono text-black bg-bone h-screen w-screen overflow-hidden relative selection:bg-accent selection:text-white">
             <NoiseOverlay />
-
-            {/* Progress Indicator */}
-            <div className="fixed right-8 top-1/2 -translate-y-1/2 flex flex-col gap-6 z-50">
-                {SLIDES.map((_, i) => (
-                    <div
-                        key={i}
-                        className={`w-1.5 rounded-full transition-all duration-500 ${i === currentSlide ? 'bg-indigo-600 h-8' : 'bg-slate-300 h-1.5 opacity-50'
+            <GridBackground />
+            
+            {/* Top Bar */}
+            <div className="fixed top-0 left-0 right-0 h-16 border-b border-black z-50 flex items-center justify-between px-6 bg-bone/90 backdrop-blur-sm">
+                <div className="font-serif text-xl font-bold italic tracking-tighter">Deploy.</div>
+                
+                {/* Pill Navigation as Horizontal List */}
+                <div className="hidden md:flex gap-px bg-black border border-black">
+                    {SLIDES.map((slide, i) => (
+                        <button
+                            key={slide}
+                            onClick={() => setCurrentSlide(i)}
+                            className={`px-4 py-1 text-xs font-mono uppercase tracking-widest transition-colors ${
+                                i === currentSlide ? 'bg-accent text-white' : 'bg-bone text-black hover:bg-black hover:text-white'
                             }`}
-                    />
-                ))}
+                        >
+                            {slide}
+                        </button>
+                    ))}
+                </div>
+                
+                <div className="font-mono text-xs">
+                    {currentSlide + 1}/{SLIDES.length}
+                </div>
             </div>
 
-            {/* Slide Transition */}
+            {/* Main Content */}
             <AnimatePresence mode="wait">
                 <motion.div
                     key={currentSlide}
-                    initial={{ opacity: 0, filter: "blur(20px)", scale: 0.95 }}
-                    animate={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
-                    exit={{ opacity: 0, filter: "blur(20px)", scale: 1.05 }}
-                    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                    className="w-full h-full"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="w-full h-full pt-16" // Add padding for top bar
                 >
                     <CurrentSlideComponent />
                 </motion.div>
             </AnimatePresence>
+            
+            {/* Decorative Corners */}
+            <div className="fixed top-20 left-6 w-2 h-2 bg-black z-40" />
+            <div className="fixed top-20 right-6 w-2 h-2 bg-black z-40" />
+            <div className="fixed bottom-6 left-6 w-2 h-2 bg-black z-40" />
+            <div className="fixed bottom-6 right-6 w-2 h-2 bg-black z-40" />
         </div>
     );
 }
