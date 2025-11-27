@@ -10,8 +10,8 @@ export default {
                 bone: '#F5F5F5',
                 black: '#000000',
                 accent: {
-                    DEFAULT: '#0047FF', // Hyper-Blue
-                    hover: '#0033CC',
+                    DEFAULT: '#474DF0', // Logo purple
+                    hover: '#3538C8',
                 }
             },
             fontFamily: {
