@@ -760,7 +760,7 @@ export default function DeployPitchDeck() {
             
             {/* Top Bar */}
             <div className="fixed top-0 left-0 right-0 h-16 border-b border-black z-50 flex items-center justify-between px-6 bg-bone/90 backdrop-blur-sm">
-                <img src="/deploy_logo.png" alt="Deploy." className="h-8" />
+                <img src="/deploy_logo.png" alt="Deploy." className="h-6" />
                 
                 {/* Pill Navigation as Horizontal List */}
                 <div className="hidden md:flex border border-black">
