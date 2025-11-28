@@ -157,7 +157,7 @@ const processFundingData = (rawData, range) => {
 };
 
 const APYChart = () => {
-    const [activeRange, setActiveRange] = useState('3M');
+    const [activeRange, setActiveRange] = useState('1W');
     const [liveAPY, setLiveAPY] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [fundingHistory, setFundingHistory] = useState([]);
@@ -365,10 +365,10 @@ const ConflictSlide = () => (
                         <div className="flex flex-col items-center">
                             <div className="font-mono text-3xl md:text-5xl font-bold text-white/60 mb-1">80%</div>
                             <div className="font-mono text-[10px] md:text-xs text-white/40 mb-3 uppercase tracking-wider">Idle</div>
-                            <motion.div 
-                                initial={{ height: 0 }}
+                    <motion.div 
+                        initial={{ height: 0 }}
                                 animate={{ height: '160px' }}
-                                transition={{ duration: 1, ease: "circOut" }}
+                        transition={{ duration: 1, ease: "circOut" }}
                                 className="w-20 md:w-28 bg-white/30 border border-white/40"
                             />
                         </div>
@@ -377,14 +377,14 @@ const ConflictSlide = () => (
                         <div className="flex flex-col items-center">
                             <div className="font-mono text-3xl md:text-5xl font-bold text-accent mb-1">20%</div>
                             <div className="font-mono text-[10px] md:text-xs text-accent mb-3 uppercase tracking-wider">Active</div>
-                            <motion.div 
-                                initial={{ height: 0 }}
+                    <motion.div 
+                        initial={{ height: 0 }}
                                 animate={{ height: '40px' }}
-                                transition={{ duration: 1, ease: "circOut", delay: 0.2 }}
+                        transition={{ duration: 1, ease: "circOut", delay: 0.2 }}
                                 className="w-20 md:w-28 bg-accent border border-accent"
                             />
                         </div>
-                    </div>
+                </div>
             </div>
                 
                 {/* Quote */}
@@ -593,31 +593,31 @@ const ProductSlide = () => {
                                             <div className="w-6 h-6 md:w-7 md:h-7 bg-accent text-white flex items-center justify-center flex-shrink-0">
                                                 <Check className="w-3.5 h-3.5 md:w-4 md:h-4" strokeWidth={2.5} />
                         </div>
-                                            <div>
+                        <div>
                                                 <div className="font-mono text-xs md:text-sm font-bold uppercase mb-0.5">{feature.label}</div>
                                                 <div className="font-mono text-[11px] md:text-xs text-black/50 leading-relaxed">{feature.desc}</div>
                         </div>
                     </div>
                 ))}
-            </div>
-                                
+                     </div>
+                     
                                 {/* Stats - Desktop Only */}
                                 <div className="hidden md:grid pt-6 border-t border-black/10 mt-6 grid-cols-3 gap-4">
-                <div>
+                        <div>
                                         <div className="text-2xl lg:text-3xl font-serif text-accent">
                                             {liveAPY !== null ? `${liveAPY.toFixed(1)}%` : '—'}
                                         </div>
                                         <div className="font-mono text-[10px] uppercase text-black/40 mt-1">Live APY</div>
-                </div>
-                <div>
+                        </div>
+                        <div>
                                         <div className="text-2xl lg:text-3xl font-mono font-bold">6.1</div>
                                         <div className="font-mono text-[10px] uppercase text-black/40 mt-1">Sharpe</div>
-                </div>
+                        </div>
                 <div>
                                         <div className="text-2xl lg:text-3xl font-mono font-bold">&lt;2%</div>
                                         <div className="font-mono text-[10px] uppercase text-black/40 mt-1">Drawdown</div>
-                                    </div>
-                </div>
+                     </div>
+                 </div>
             </div>
             
                             {/* Right: Chart */}
@@ -647,7 +647,7 @@ const TractionSlide = () => {
     return (
         <SlideContainer dark>
             <div className="w-full max-w-5xl">
-                <motion.div
+                            <motion.div
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     transition={{ duration: 0.6 }}
@@ -666,11 +666,11 @@ const TractionSlide = () => {
                             <div key={stat.label} className="bg-black p-5 md:p-8 text-center">
                                 <div className="text-3xl md:text-4xl lg:text-5xl font-serif text-white mb-2">
                                     <AnimatedNumber value={stat.value} prefix={stat.prefix} suffix={stat.suffix} />
-                                </div>
+                        </div>
                                 <div className="font-mono text-[10px] md:text-xs uppercase tracking-widest text-white/40">{stat.label}</div>
-                            </div>
-                        ))}
-                 </div>
+                    </div>
+                ))}
+            </div>
                     
                     {/* Quote */}
                     <blockquote className="border-l-2 border-accent pl-6 md:pl-8">
@@ -734,15 +734,15 @@ const MoatSlide = () => {
                                 <div className="p-3 md:p-5 text-center font-mono text-xs md:text-sm text-black/40 border-l border-black flex items-center justify-center gap-1.5">
                                     <X className="w-3.5 h-3.5 text-red-500 hidden sm:block" />
                                     <span>{row.old}</span>
-                                </div>
+                </div>
                                 <div className="p-3 md:p-5 text-center font-mono text-xs md:text-sm font-bold bg-accent/5 border-l border-black flex items-center justify-center gap-1.5">
                                     <Check className="w-3.5 h-3.5 text-accent hidden sm:block" />
                                     <span>{row.deploy}</span>
-                                </div>
+                </div>
                             </div>
                         ))}
-                    </div>
-                    
+            </div>
+            
                     {/* APY Comparison */}
                     <div>
                         <div className="font-mono text-[11px] uppercase tracking-widest text-black/40 mb-5">APY Comparison</div>
@@ -752,7 +752,7 @@ const MoatSlide = () => {
                                     <div className="flex justify-between mb-2 font-mono text-xs uppercase">
                                         <span className={i === 0 ? 'font-bold' : 'text-black/50'}>{item.name}</span>
                                         <span className={i === 0 ? 'text-accent font-bold' : 'text-black/40'}>{item.val}%</span>
-                                    </div>
+                        </div>
                                     <div className="h-3 md:h-4 border border-black p-0.5">
                             <motion.div
                                 initial={{ width: 0 }}
@@ -761,8 +761,8 @@ const MoatSlide = () => {
                                             viewport={{ once: true }}
                                             className={`h-full ${i === 0 ? 'bg-accent' : 'bg-black/15'}`}
                             />
-                        </div>
                     </div>
+                </div>
                 ))}
             </div>
                     </div>
@@ -800,8 +800,8 @@ const RoadmapSlide = () => {
                             <h2 className="text-4xl md:text-6xl lg:text-7xl font-serif">Roadmap</h2>
                         </div>
                         <span className="font-mono text-[10px] md:text-xs uppercase tracking-widest text-black/40">Scale to Billions</span>
-                    </div>
-                    
+                </div>
+                
                     {/* Timeline Grid */}
                     <div className="border-2 border-black">
                         {/* Desktop: Horizontal Grid */}
@@ -825,7 +825,7 @@ const RoadmapSlide = () => {
                                     {/* Diamond marker on timeline */}
                                     <div className="relative h-0">
                                         <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-black rotate-45" />
-                                    </div>
+                    </div>
                                     
                                     {/* Content section */}
                                     <div className="p-6 pt-8 text-center flex-1 flex flex-col justify-start">
@@ -833,8 +833,8 @@ const RoadmapSlide = () => {
                                         <p className="font-mono text-xs text-black/50 leading-relaxed">{item.desc}</p>
                                     </div>
                                 </motion.div>
-                            ))}
-                        </div>
+                ))}
+            </div>
                         
                         {/* Mobile: Vertical Stack */}
                         <div className="md:hidden">
@@ -851,7 +851,7 @@ const RoadmapSlide = () => {
                                     <div className="w-24 flex-shrink-0 border-r border-black flex flex-col items-center justify-center py-5 relative">
                                         <div className="border border-black px-2 py-1 font-mono text-[9px] uppercase tracking-wider mb-3">
                                             {item.date}
-                                        </div>
+        </div>
                                         <div className="w-3 h-3 bg-black rotate-45" />
                                     </div>
                                     
@@ -859,15 +859,15 @@ const RoadmapSlide = () => {
                                     <div className="flex-1 p-4">
                                         <h3 className="text-lg font-serif mb-1">{item.title}</h3>
                                         <p className="font-mono text-[10px] text-black/50 leading-relaxed">{item.desc}</p>
-                                    </div>
+                </div>
                                 </motion.div>
-                            ))}
+            ))}
                         </div>
                     </div>
                 </motion.div>
-            </div>
-        </SlideContainer>
-    );
+        </div>
+    </SlideContainer>
+);
 };
 
 // ============================================================================
