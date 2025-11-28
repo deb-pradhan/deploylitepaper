@@ -7,7 +7,7 @@ import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, ReferenceLine } fro
 // CONSTANTS & CONFIG
 // ============================================================================
 
-const SLIDES = ['Title', 'Conflict', 'Philosophy', 'Solution', 'Product', 'Traction', 'Moat', 'Engine', 'Team', 'Ask'];
+const SLIDES = ['Title', 'Conflict', 'Philosophy', 'Solution', 'Product', 'Traction', 'Moat', 'Roadmap', 'Team', 'Ask'];
 const DARK_SLIDES = [1, 5, 9]; // Conflict, Traction, Ask
 
 const STRATEGIES_API = 'https://do510emoi4o2y.cloudfront.net/api/available-strategies';
@@ -776,62 +776,98 @@ const MoatSlide = () => {
 // SLIDE 8: ENGINE
 // ============================================================================
 
-const EngineSlide = () => {
-    const pillars = [
-        { pillar: "Access", title: "Deposit", desc: "Deposit stablecoins, receive DUSD.", icon: Landmark },
-        { pillar: "Retention", title: "Compound", desc: "Yield auto-compounds daily.", icon: TrendingUp },
-        { pillar: "Revenue", title: "20% Fee", desc: "Performance fee. You win, we win.", icon: Zap }
+const RoadmapSlide = () => {
+    const milestones = [
+        { date: "DEC 2025", title: "DUSD Launch", desc: "Ethereum mainnet. Pre-deposit commitments." },
+        { date: "Q1 2026", title: "Transparency", desc: "Full dashboard & attestations." },
+        { date: "Q2 2026", title: "Integrations", desc: "Lending & Debit card spending." },
+        { date: "2026-27", title: "Enterprise", desc: "Privacy layers & Canton." }
     ];
 
     return (
-    <SlideContainer>
-            <div className="w-full max-w-5xl">
+        <SlideContainer>
+            <div className="w-full max-w-6xl">
                 <motion.div
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     transition={{ duration: 0.6 }}
                     viewport={{ once: true }}
                 >
-                    <SectionTag>07 — Business Model</SectionTag>
-                    
-                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-8 md:mb-12">
-                        The <span className="text-accent italic">DUSD</span> flywheel fuels growth.
-                    </h2>
-                    
-                    {/* Flywheel - Horizontal on mobile */}
-                    <div className="grid grid-cols-3 md:grid-cols-3 gap-2 md:gap-4 mb-6 md:mb-10">
-                        {pillars.map((item, i) => (
-                            <div 
-                                key={item.pillar} 
-                                className="border-2 border-black p-3 md:p-6 bg-white hover:bg-black hover:text-white transition-colors group text-center md:text-left"
-                            >
-                                <div className="font-mono text-[8px] md:text-[10px] uppercase tracking-wider text-accent mb-2 md:mb-3">
-                                    <span className="hidden md:inline">Pillar {i + 1}: </span>{item.pillar}
-                                </div>
-                                <item.icon className="w-6 h-6 md:w-8 md:h-8 mb-2 md:mb-3 stroke-[1.5] text-black group-hover:text-white transition-colors mx-auto md:mx-0" />
-                                <h3 className="text-sm md:text-lg font-serif italic mb-1">{item.title}</h3>
-                                <p className="font-mono text-[10px] md:text-xs text-black/50 group-hover:text-white/60 transition-colors hidden md:block">{item.desc}</p>
-                </div>
-            ))}
+                    {/* Header */}
+                    <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-8 md:mb-12 border-b border-black pb-4 md:pb-6">
+                        <div className="flex items-baseline gap-4 mb-2 md:mb-0">
+                            <span className="font-mono text-xs md:text-sm text-black/40">08</span>
+                            <h2 className="text-4xl md:text-6xl lg:text-7xl font-serif">Roadmap</h2>
+                        </div>
+                        <span className="font-mono text-[10px] md:text-xs uppercase tracking-widest text-black/40">Scale to Billions</span>
                     </div>
                     
-                    {/* Revenue Model */}
-                    <div className="border border-black p-4 md:p-8 bg-bone grid grid-cols-2 gap-4 md:gap-8">
-                        <div className="text-center md:text-left">
-                            <div className="font-mono text-[9px] md:text-[10px] uppercase tracking-widest text-black/40 mb-1">Revenue</div>
-                            <div className="text-3xl md:text-5xl font-serif text-accent">20%</div>
-                            <div className="font-mono text-[10px] md:text-sm text-black/50 mt-1">Performance fee</div>
+                    {/* Timeline Grid */}
+                    <div className="border-2 border-black">
+                        {/* Desktop: Horizontal Grid */}
+                        <div className="hidden md:grid md:grid-cols-4">
+                            {milestones.map((item, i) => (
+                                <motion.div 
+                                    key={item.date}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.5, delay: i * 0.1 }}
+                                    viewport={{ once: true }}
+                                    className={`relative flex flex-col border-black ${i < milestones.length - 1 ? 'border-r' : ''}`}
+                                >
+                                    {/* Top section with date */}
+                                    <div className="h-40 flex items-center justify-center border-b border-black">
+                                        <div className="border border-black px-4 py-2 font-mono text-xs uppercase tracking-widest">
+                                            {item.date}
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Diamond marker on timeline */}
+                                    <div className="relative h-0">
+                                        <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-black rotate-45" />
+                                    </div>
+                                    
+                                    {/* Content section */}
+                                    <div className="p-6 pt-8 text-center flex-1 flex flex-col justify-start">
+                                        <h3 className="text-xl font-serif mb-2 whitespace-nowrap">{item.title}</h3>
+                                        <p className="font-mono text-xs text-black/50 leading-relaxed">{item.desc}</p>
+                                    </div>
+                                </motion.div>
+                            ))}
                         </div>
-                        <div className="text-center md:text-left">
-                            <div className="font-mono text-[9px] md:text-[10px] uppercase tracking-widest text-black/40 mb-1">Target AUM</div>
-                            <div className="text-3xl md:text-5xl font-serif text-black">$500M</div>
-                            <div className="font-mono text-[10px] md:text-sm text-black/50 mt-1">24 months</div>
+                        
+                        {/* Mobile: Vertical Stack */}
+                        <div className="md:hidden">
+                            {milestones.map((item, i) => (
+                                <motion.div 
+                                    key={item.date}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    transition={{ duration: 0.4, delay: i * 0.1 }}
+                                    viewport={{ once: true }}
+                                    className={`flex items-stretch ${i < milestones.length - 1 ? 'border-b border-black' : ''}`}
+                                >
+                                    {/* Left: Date + Diamond */}
+                                    <div className="w-24 flex-shrink-0 border-r border-black flex flex-col items-center justify-center py-5 relative">
+                                        <div className="border border-black px-2 py-1 font-mono text-[9px] uppercase tracking-wider mb-3">
+                                            {item.date}
+                                        </div>
+                                        <div className="w-3 h-3 bg-black rotate-45" />
+                                    </div>
+                                    
+                                    {/* Right: Content */}
+                                    <div className="flex-1 p-4">
+                                        <h3 className="text-lg font-serif mb-1">{item.title}</h3>
+                                        <p className="font-mono text-[10px] text-black/50 leading-relaxed">{item.desc}</p>
+                                    </div>
+                                </motion.div>
+                            ))}
                         </div>
                     </div>
                 </motion.div>
-        </div>
-    </SlideContainer>
-);
+            </div>
+        </SlideContainer>
+    );
 };
 
 // ============================================================================
@@ -1020,7 +1056,7 @@ export default function DeployPitchDeck() {
         };
     }, [handleScroll, isMenuOpen]);
 
-    const slideComponents = [TitleSlide, ConflictSlide, PhilosophySlide, SolutionSlide, ProductSlide, TractionSlide, MoatSlide, EngineSlide, TeamSlide, AskSlide];
+    const slideComponents = [TitleSlide, ConflictSlide, PhilosophySlide, SolutionSlide, ProductSlide, TractionSlide, MoatSlide, RoadmapSlide, TeamSlide, AskSlide];
     const CurrentSlideComponent = slideComponents[currentSlide];
     const isDarkSlide = DARK_SLIDES.includes(currentSlide);
 
