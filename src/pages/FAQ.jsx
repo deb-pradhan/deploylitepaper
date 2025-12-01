@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ArrowLeft } from 'lucide-react';
+import { ChevronDown, ArrowLeft, Send, MessageSquare, X, Bot, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 // ============================================================================
@@ -139,6 +139,179 @@ const faqCategories = [
 const NoiseOverlay = () => <div className="noise-overlay" />;
 
 // ============================================================================
+// CHAT SIDEBAR COMPONENT
+// ============================================================================
+
+const ChatMessage = ({ message, isUser }) => (
+    <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={`flex gap-3 ${isUser ? 'flex-row-reverse' : ''}`}
+    >
+        <div className={`
+            w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
+            ${isUser ? 'bg-accent text-white' : 'bg-black text-white'}
+        `}>
+            {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+        </div>
+        <div className={`
+            max-w-[80%] p-3 text-sm leading-relaxed
+            ${isUser 
+                ? 'bg-accent text-white rounded-2xl rounded-tr-sm' 
+                : 'bg-black/5 text-black rounded-2xl rounded-tl-sm'
+            }
+        `}>
+            {message}
+        </div>
+    </motion.div>
+);
+
+const ChatSidebar = ({ isOpen, onClose }) => {
+    const [messages, setMessages] = useState([
+        { text: "Hi! I'm the Deploy AI assistant. Ask me anything about Deploy, D-Assets, yield strategies, or how to get started.", isUser: false }
+    ]);
+    const [input, setInput] = useState('');
+    const [isTyping, setIsTyping] = useState(false);
+    const messagesEndRef = useRef(null);
+    const inputRef = useRef(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
+
+    useEffect(() => {
+        if (isOpen && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [isOpen]);
+
+    const handleSend = async () => {
+        if (!input.trim()) return;
+
+        const userMessage = input.trim();
+        setInput('');
+        setMessages(prev => [...prev, { text: userMessage, isUser: true }]);
+        setIsTyping(true);
+
+        // Simulate AI response (replace with actual API call)
+        setTimeout(() => {
+            const responses = [
+                "Deploy uses delta-neutral strategies to harvest yield from perpetual futures funding rates. This means your principal is protected regardless of market direction while earning consistent returns.",
+                "D-Assets are yield-enhanced versions of your crypto. When you deposit BTC, ETH, or stablecoins, you receive D-Assets that earn yield automatically while maintaining 1:1 backing.",
+                "Our yield comes from funding rates in perpetual futures markets. Traders pay these rates to maintain leveraged positions, and Deploy captures these payments through strategic positioning.",
+                "Getting started is simple: visit deploy.finance, connect your wallet, deposit your assets, and start earning immediately. No minimum deposits required.",
+                "Deploy is completely self-custodial. Your assets stay in your wallet under your control at all times. We never take custody of user funds."
+            ];
+            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+            setMessages(prev => [...prev, { text: randomResponse, isUser: false }]);
+            setIsTyping(false);
+        }, 1500);
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSend();
+        }
+    };
+
+    return (
+        <>
+            {/* Overlay for mobile */}
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
+                        onClick={onClose}
+                    />
+                )}
+            </AnimatePresence>
+
+            {/* Sidebar */}
+            <motion.aside
+                initial={{ x: '100%' }}
+                animate={{ x: isOpen ? 0 : '100%' }}
+                transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+                className="fixed right-0 top-14 md:top-16 bottom-0 w-full sm:w-96 bg-bone border-l border-black z-50 flex flex-col"
+            >
+                {/* Header */}
+                <div className="p-4 border-b border-black flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
+                            <Bot className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                            <h3 className="font-serif font-bold">Deploy AI</h3>
+                            <p className="text-[10px] uppercase tracking-widest text-black/50">Ask anything</p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="p-2 hover:bg-black/10 transition-colors"
+                    >
+                        <X className="w-5 h-5" />
+                    </button>
+                </div>
+
+                {/* Messages */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                    {messages.map((msg, i) => (
+                        <ChatMessage key={i} message={msg.text} isUser={msg.isUser} />
+                    ))}
+                    {isTyping && (
+                        <div className="flex gap-3">
+                            <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center">
+                                <Bot className="w-4 h-4" />
+                            </div>
+                            <div className="bg-black/5 rounded-2xl rounded-tl-sm p-3">
+                                <div className="flex gap-1">
+                                    <span className="w-2 h-2 bg-black/30 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                    <span className="w-2 h-2 bg-black/30 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                    <span className="w-2 h-2 bg-black/30 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    <div ref={messagesEndRef} />
+                </div>
+
+                {/* Input */}
+                <div className="p-4 border-t border-black">
+                    <div className="flex gap-2">
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyPress={handleKeyPress}
+                            placeholder="Ask about Deploy..."
+                            className="flex-1 px-4 py-3 bg-white border border-black text-sm font-mono placeholder:text-black/30 focus:outline-none focus:ring-2 focus:ring-accent"
+                        />
+                        <button
+                            onClick={handleSend}
+                            disabled={!input.trim()}
+                            className="px-4 py-3 bg-accent text-white hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <Send className="w-5 h-5" />
+                        </button>
+                    </div>
+                    <p className="text-[10px] text-black/40 mt-2 text-center">
+                        Powered by Deploy AI • Responses may not always be accurate
+                    </p>
+                </div>
+            </motion.aside>
+        </>
+    );
+};
+
+// ============================================================================
 // FAQ ACCORDION COMPONENT
 // ============================================================================
 
@@ -206,6 +379,7 @@ const FAQCategory = ({ title, faqs, openIndex, setOpenIndex, categoryIndex }) =>
 
 const FAQ = () => {
     const [openIndex, setOpenIndex] = useState(null);
+    const [isChatOpen, setIsChatOpen] = useState(false);
 
     return (
         <div className="pitch-deck-container font-mono min-h-screen bg-bone text-black relative">
@@ -213,11 +387,13 @@ const FAQ = () => {
 
             {/* Header */}
             <header className="fixed top-0 left-0 right-0 h-14 md:h-16 border-b border-black z-50 flex items-center justify-between px-4 md:px-6 backdrop-blur-md bg-bone/80">
-                <img 
-                    src="/deploy_logo.png" 
-                    alt="Deploy." 
-                    className="h-5 md:h-6" 
-                />
+                <Link to="/">
+                    <img 
+                        src="/deploy_logo.png" 
+                        alt="Deploy." 
+                        className="h-5 md:h-6" 
+                    />
+                </Link>
                 
                 <nav className="hidden md:flex border border-black">
                     <Link
@@ -240,15 +416,29 @@ const FAQ = () => {
                     </Link>
                 </nav>
 
-                <a 
-                    href="https://deploy.finance" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="px-4 py-2 border border-black font-mono text-[10px] uppercase tracking-widest hover:bg-black hover:text-white transition-colors"
-                >
-                    Launch App
-                </a>
+                <div className="flex items-center gap-2">
+                    {/* Chat Toggle Button */}
+                    <button
+                        onClick={() => setIsChatOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 border border-black font-mono text-[10px] uppercase tracking-widest hover:bg-black hover:text-white transition-colors"
+                    >
+                        <MessageSquare className="w-4 h-4" />
+                        <span className="hidden sm:inline">Ask AI</span>
+                    </button>
+
+                    <a 
+                        href="https://deploy.finance" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 border border-black font-mono text-[10px] uppercase tracking-widest hover:bg-black hover:text-white transition-colors"
+                    >
+                        Launch App
+                    </a>
+                </div>
             </header>
+
+            {/* Chat Sidebar */}
+            <ChatSidebar isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
 
             {/* Main Content */}
             <main className="pt-24 md:pt-32 pb-16 md:pb-24 px-6 md:px-16 lg:px-24 max-w-5xl mx-auto relative z-10">
@@ -271,7 +461,14 @@ const FAQ = () => {
                     </h1>
                     
                     <p className="text-lg md:text-xl text-black/60 max-w-2xl leading-relaxed">
-                        Can't find what you're looking for? Reach out to our team at{' '}
+                        Can't find what you're looking for? 
+                        <button 
+                            onClick={() => setIsChatOpen(true)}
+                            className="text-accent hover:underline ml-1"
+                        >
+                            Ask our AI assistant
+                        </button>
+                        {' '}or reach out at{' '}
                         <a href="mailto:hello@deploy.finance" className="text-accent hover:underline">
                             hello@deploy.finance
                         </a>
@@ -307,6 +504,14 @@ const FAQ = () => {
                 </div>
             </main>
 
+            {/* Floating Chat Button (mobile) */}
+            <button
+                onClick={() => setIsChatOpen(true)}
+                className="fixed bottom-6 right-6 w-14 h-14 bg-accent text-white rounded-full shadow-lg flex items-center justify-center hover:bg-black transition-colors z-40 lg:hidden"
+            >
+                <MessageSquare className="w-6 h-6" />
+            </button>
+
             {/* Footer */}
             <footer className="border-t border-black px-6 md:px-16 lg:px-24 py-8 relative z-10">
                 <div className="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
@@ -326,4 +531,3 @@ const FAQ = () => {
 };
 
 export default FAQ;
-
