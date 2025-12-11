@@ -325,8 +325,10 @@ const TitleSlide = () => (
                         
                 {/* Tagline */}
                 <p className="text-lg md:text-2xl lg:text-3xl font-mono text-black/70 max-w-xl leading-snug">
-                    Yield beyond the <span className="text-accent font-bold">[h]</span>edge
-                        </p>
+                    Hedge the volatility.
+                    <br />
+                    <span className="text-accent font-semibold">Unlock more yield.</span>
+                </p>
                     </motion.div>
         </div>
     </SlideContainer>
