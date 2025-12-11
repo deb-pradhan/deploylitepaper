@@ -89,11 +89,103 @@ const AnimatedNumber = ({ value, prefix = "", suffix = "" }) => {
     return <span className="tabular-nums tracking-tight">{prefix}{displayValue}{suffix}</span>;
 };
 
+// Scrambled text loading animation
+const ScrambledNumber = ({ value, isLoading, prefix = "", suffix = "", decimals = 2 }) => {
+    const chars = '0123456789.+-';
+    const [display, setDisplay] = useState('');
+    const targetLength = value ? `${parseFloat(value).toFixed(decimals)}`.length : 5;
+
+    useEffect(() => {
+        if (isLoading) {
+            const interval = setInterval(() => {
+                let scrambled = '';
+                for (let i = 0; i < targetLength; i++) {
+                    scrambled += chars[Math.floor(Math.random() * chars.length)];
+                }
+                setDisplay(scrambled);
+            }, 50);
+            return () => clearInterval(interval);
+        } else if (value !== null && value !== undefined) {
+            // Unscramble animation - gradually reveal the real value
+            const target = parseFloat(value).toFixed(decimals);
+            let iteration = 0;
+            const maxIterations = 10;
+            
+            const interval = setInterval(() => {
+                let result = '';
+                for (let i = 0; i < target.length; i++) {
+                    if (iteration >= maxIterations || i < iteration) {
+                        result += target[i];
+                    } else {
+                        result += chars[Math.floor(Math.random() * chars.length)];
+                    }
+                }
+                setDisplay(result);
+                iteration++;
+                
+                if (iteration > target.length + maxIterations) {
+                    setDisplay(target);
+                    clearInterval(interval);
+                }
+            }, 40);
+            return () => clearInterval(interval);
+        }
+    }, [isLoading, value, targetLength, decimals]);
+
+    return (
+        <span className="tabular-nums tracking-tight font-mono">
+            {prefix}{display || '—'}{!isLoading && value !== null ? suffix : ''}
+        </span>
+    );
+};
+
+// Chart loading skeleton
+const ChartLoadingSkeleton = () => (
+    <div className="w-full h-full flex flex-col relative overflow-hidden">
+        {/* Animated scan line */}
+        <div className="absolute inset-0">
+            <motion.div
+                className="absolute w-full h-px bg-gradient-to-r from-transparent via-accent to-transparent"
+                initial={{ top: '0%' }}
+                animate={{ top: '100%' }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+            />
+        </div>
+        
+        {/* Fake chart lines */}
+        <div className="flex-1 flex items-end justify-between gap-1 px-2 pb-6">
+            {[...Array(20)].map((_, i) => (
+                <motion.div
+                    key={i}
+                    className="flex-1 bg-black/10"
+                    initial={{ height: '20%' }}
+                    animate={{ 
+                        height: ['20%', `${30 + Math.random() * 50}%`, '20%'],
+                    }}
+                    transition={{ 
+                        duration: 1.5,
+                        repeat: Infinity,
+                        delay: i * 0.05,
+                        ease: "easeInOut"
+                    }}
+                />
+            ))}
+        </div>
+        
+        {/* X-axis skeleton */}
+        <div className="h-4 flex items-center justify-between px-2">
+            {[...Array(5)].map((_, i) => (
+                <div key={i} className="w-8 h-2 bg-black/10 animate-pulse" />
+            ))}
+        </div>
+    </div>
+);
+
 // ============================================================================
 // APY CHART COMPONENT
 // ============================================================================
 
-const fetchFundingHistory = async (days = 180, coin = 'HYPE') => {
+const fetchFundingHistory = async (days = 730, coin = 'HYPE') => {
     const allData = [];
     const now = Date.now();
     let currentStartTime = now - (days * 24 * 60 * 60 * 1000);
@@ -176,16 +268,20 @@ const processFundingData = (rawData, range) => {
 };
 
 const calculateAPYStats = (rawData) => {
-    if (!rawData?.length) return { threeMonth: null, sixMonth: null, max: null, realised: null };
+    if (!rawData?.length) return { live: null, thirtyDay: null, threeMonth: null, max: null, realised: null };
     
     const sorted = [...rawData].sort((a, b) => a.time - b.time);
     const now = Date.now();
     
+    const thirtyDayCutoff = now - (30 * 24 * 60 * 60 * 1000);
     const threeMonthCutoff = now - (90 * 24 * 60 * 60 * 1000);
-    const sixMonthCutoff = now - (180 * 24 * 60 * 60 * 1000);
+    // Jan 1, 2024 timestamp for all-time realized calculation
+    const jan2024Cutoff = new Date('2024-01-01T00:00:00Z').getTime();
     
+    const thirtyDayData = sorted.filter(item => item.time >= thirtyDayCutoff);
     const threeMonthData = sorted.filter(item => item.time >= threeMonthCutoff);
-    const sixMonthData = sorted.filter(item => item.time >= sixMonthCutoff);
+    // All-time realized from Jan 2024 onwards
+    const realisedData = sorted.filter(item => item.time >= jan2024Cutoff);
     
     const calcAvgAPY = (data) => {
         if (!data.length) return null;
@@ -193,6 +289,12 @@ const calculateAPYStats = (rawData) => {
         const sum = data.reduce((acc, item) => acc + parseFloat(item.fundingRate) * 24 * 365 * 0.75 * 100, 0);
         return sum / data.length;
     };
+    
+    // Calculate live APY from the last 24 hours
+    const oneDayMs = 24 * 60 * 60 * 1000;
+    const oneDayAgo = now - oneDayMs;
+    const lastDayData = sorted.filter(item => item.time >= oneDayAgo);
+    const liveAPY = calcAvgAPY(lastDayData);
     
     // Calculate 7-day rolling average max APY (more meaningful than single period max)
     const sevenDayMs = 7 * 24 * 60 * 60 * 1000;
@@ -213,16 +315,17 @@ const calculateAPYStats = (rawData) => {
     }
     
     return {
+        live: liveAPY, // Current 24h APY
+        thirtyDay: calcAvgAPY(thirtyDayData), // 30-day realized average
         threeMonth: calcAvgAPY(threeMonthData),
-        sixMonth: calcAvgAPY(sixMonthData),
-        max: maxRollingAPY, // 7-day rolling max
-        realised: calcAvgAPY(sorted) // average over ALL available data
+        max: maxRollingAPY, // Peak 7-day rolling max
+        realised: calcAvgAPY(realisedData) // All-time average from March 2025
     };
 };
 
 const APYChart = ({ compact = false }) => {
-    const [activeRange, setActiveRange] = useState('3M');
-    const [apyStats, setApyStats] = useState({ threeMonth: null, sixMonth: null, max: null, realised: null });
+    const [activeRange, setActiveRange] = useState('1M');
+    const [apyStats, setApyStats] = useState({ live: null, thirtyDay: null, threeMonth: null, max: null, realised: null });
     const [isLoading, setIsLoading] = useState(true);
     const [fundingHistory, setFundingHistory] = useState([]);
     const [chartData, setChartData] = useState([]);
@@ -230,7 +333,7 @@ const APYChart = ({ compact = false }) => {
     useEffect(() => {
         const loadHistory = async () => {
             setIsLoading(true);
-            const data = await fetchFundingHistory(180);
+            const data = await fetchFundingHistory(730);
             setFundingHistory(data);
             setApyStats(calculateAPYStats(data));
             setIsLoading(false);
@@ -244,7 +347,7 @@ const APYChart = ({ compact = false }) => {
         }
     }, [activeRange, fundingHistory]);
 
-    const ranges = ['24H', '1W', '1M', '3M'];
+    const ranges = ['1M', '3M', '6M'];
 
     return (
         <div className="w-full h-full bg-bone border border-black p-3 md:p-5 flex flex-col">
@@ -271,9 +374,7 @@ const APYChart = ({ compact = false }) => {
             {/* Chart */}
             <div className={`flex-1 ${compact ? 'min-h-[100px]' : 'min-h-[120px] md:min-h-[140px]'}`}>
                 {isLoading ? (
-                    <div className="w-full h-full flex items-center justify-center">
-                        <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                    </div>
+                    <ChartLoadingSkeleton />
                 ) : chartData.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={chartData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
@@ -312,17 +413,19 @@ const APYChart = ({ compact = false }) => {
     </div>
             
             {/* Footer */}
-            {chartData.length > 0 && (
-                <div className="flex items-center justify-between border-t border-black pt-3 mt-3 md:pt-4 md:mt-4">
-                    <div className="flex items-baseline gap-2">
-                        <span className="font-serif text-xl md:text-2xl text-accent font-medium">
-                            {(chartData.reduce((sum, d) => sum + d.apy, 0) / chartData.length).toFixed(2)}%
-                        </span>
-                        <span className="font-mono text-[9px] md:text-[10px] text-black/40 uppercase">Avg APY</span>
-                    </div>
-                    <span className="font-mono text-[9px] md:text-[10px] text-accent uppercase tracking-wide font-medium">{activeRange}</span>
+            <div className="flex items-center justify-between border-t border-black pt-3 mt-3 md:pt-4 md:mt-4">
+                <div className="flex items-baseline gap-2">
+                    <span className="font-serif text-xl md:text-2xl text-accent font-medium">
+                        <ScrambledNumber 
+                            value={chartData.length > 0 ? chartData.reduce((sum, d) => sum + d.apy, 0) / chartData.length : null}
+                            isLoading={isLoading}
+                            suffix="%"
+                        />
+                    </span>
+                    <span className="font-mono text-[9px] md:text-[10px] text-black/40 uppercase">Avg APY</span>
                 </div>
-            )}
+                <span className="font-mono text-[9px] md:text-[10px] text-accent uppercase tracking-wide font-medium">{activeRange}</span>
+            </div>
         </div>
     );
 };
@@ -544,13 +647,13 @@ const ProblemSlide = () => (
 // ============================================================================
 
 const SolutionSlide = () => {
-    const [apyStats, setApyStats] = useState({ threeMonth: null, sixMonth: null, max: null, realised: null });
+    const [apyStats, setApyStats] = useState({ live: null, thirtyDay: null, threeMonth: null, max: null, realised: null });
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const loadStats = async () => {
             setIsLoading(true);
-            const data = await fetchFundingHistory(180);
+            const data = await fetchFundingHistory(730);
             setApyStats(calculateAPYStats(data));
             setIsLoading(false);
         };
@@ -579,27 +682,53 @@ const SolutionSlide = () => {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-0 mb-8">
                         <div className="p-5 md:p-6 border-2 border-black md:border bg-white">
                             <div className="text-3xl md:text-4xl font-serif text-accent mb-2">
-                                {apyStats.threeMonth !== null ? `${apyStats.threeMonth.toFixed(1)}%` : '—'}
+                                <ScrambledNumber 
+                                    value={apyStats.live}
+                                    isLoading={isLoading}
+                                    suffix="%"
+                                    decimals={1}
+                                />
                             </div>
-                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">3M Avg APY</div>
+                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50 flex items-center gap-1.5">
+                                <span className="relative flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                </span>
+                                Live APY
+                            </div>
                         </div>
                         <div className="p-5 md:p-6 border-2 border-black md:border md:border-l-0 bg-white">
                             <div className="text-3xl md:text-4xl font-serif text-accent mb-2">
-                                {apyStats.sixMonth !== null ? `${apyStats.sixMonth.toFixed(1)}%` : '—'}
+                                <ScrambledNumber 
+                                    value={apyStats.thirtyDay}
+                                    isLoading={isLoading}
+                                    suffix="%"
+                                    decimals={1}
+                                />
                             </div>
-                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">6M Avg APY</div>
+                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">30D Realized</div>
                         </div>
                         <div className="p-5 md:p-6 border-2 border-black md:border md:border-l-0 bg-white">
-                            <div className="text-3xl md:text-4xl font-serif text-black mb-2">
-                                {apyStats.max !== null ? `${apyStats.max.toFixed(1)}%` : '—'}
+                            <div className="text-3xl md:text-4xl font-serif text-accent mb-2">
+                                <ScrambledNumber 
+                                    value={apyStats.max}
+                                    isLoading={isLoading}
+                                    suffix="%"
+                                    decimals={1}
+                                />
                             </div>
-                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">Peak 7D APY</div>
+                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">Peak APY</div>
                         </div>
                         <div className="p-5 md:p-6 border-2 border-black md:border md:border-l-0 bg-white">
-                            <div className="text-3xl md:text-4xl font-serif text-black mb-2">
-                                {apyStats.realised !== null ? `${apyStats.realised.toFixed(1)}%` : '—'}
+                            <div className="text-3xl md:text-4xl font-serif text-accent mb-2">
+                                <ScrambledNumber 
+                                    value={apyStats.realised}
+                                    isLoading={isLoading}
+                                    suffix="%"
+                                    decimals={1}
+                                />
                             </div>
-                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">All-Time Avg</div>
+                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">Realised APY</div>
                         </div>
                     </div>
                     
