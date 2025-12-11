@@ -1119,7 +1119,15 @@ const TeamSlide = () => {
 
     const advisors = [
         { name: "Chirdeep", role: "Advisor", expertise: "Strategic Advisor" },
-        { name: "Shawn", role: "Advisor", expertise: "Industry Expert" },
+        { name: "Shawn", role: "Angel", expertise: "Ex-JPMorgan" },
+    ];
+
+    const angels = [
+        { name: "FalconX", role: "Advisory & Angel", expertise: "Crypto Prime Brokerage", note: "Committed" },
+        { name: "Jimmy", role: "Angel", expertise: "Coincall" },
+        { name: "0xwives", role: "Angel", expertise: "aixbt" },
+        { name: "Sankalp", role: "Angel", expertise: "Rising Capital", link: "https://risingcap.co/" },
+        { name: "Albin Wang", role: "Angel", expertise: "BitGo", link: "https://sg.linkedin.com/in/albinwan" },
     ];
 
     return (
@@ -1171,10 +1179,10 @@ const TeamSlide = () => {
                         ))}
                     </div>
                     
-                    {/* Advisors */}
+                    {/* Advisors & Angels */}
                     <div className="border-2 border-black bg-white p-5 md:p-6">
-                        <h3 className="font-mono text-xs uppercase tracking-widest text-black/50 mb-4">Advisors</h3>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <h3 className="font-mono text-xs uppercase tracking-widest text-black/50 mb-4">Advisors & Angels</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {advisors.map((advisor) => (
                                 <div key={advisor.name} className="flex items-center gap-3">
                                     <div className="w-10 h-10 bg-accent/10 flex items-center justify-center">
@@ -1183,6 +1191,24 @@ const TeamSlide = () => {
                                     <div>
                                         <div className="font-mono text-sm font-bold">{advisor.name}</div>
                                         <div className="font-mono text-[10px] text-black/40">{advisor.expertise}</div>
+                                    </div>
+                                </div>
+                            ))}
+                            {angels.map((angel) => (
+                                <div key={angel.name} className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-accent/10 flex items-center justify-center">
+                                        <User className="w-5 h-5 text-accent/50" />
+                                    </div>
+                                    <div>
+                                        {angel.link ? (
+                                            <a href={angel.link} target="_blank" rel="noopener noreferrer" className="font-mono text-sm font-bold hover:text-accent transition-colors">
+                                                {angel.name}
+                                            </a>
+                                        ) : (
+                                            <div className="font-mono text-sm font-bold">{angel.name}</div>
+                                        )}
+                                        <div className="font-mono text-[10px] text-black/40">{angel.expertise}</div>
+                                        {angel.note && <div className="font-mono text-[9px] text-accent/70">{angel.note}</div>}
                                     </div>
                                 </div>
                             ))}
