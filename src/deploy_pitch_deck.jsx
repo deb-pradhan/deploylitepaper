@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, TrendingUp, ArrowRight, Activity, Layers, Landmark, Code, Zap, User, Check, X, ChevronLeft, ChevronRight, List } from 'lucide-react';
+import { Shield, TrendingUp, ArrowRight, Activity, Layers, Landmark, Code, Zap, User, Check, X, ChevronLeft, ChevronRight, List, ExternalLink, Twitter, Linkedin, DollarSign, Users, Wallet, Building2, Handshake, PieChart, ArrowDownUp } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, ReferenceLine } from 'recharts';
 import Navbar from './components/Navbar';
 
@@ -8,8 +8,8 @@ import Navbar from './components/Navbar';
 // CONSTANTS & CONFIG
 // ============================================================================
 
-const SLIDES = ['Title', 'Conflict', 'Philosophy', 'Solution', 'Product', 'Traction', 'Moat', 'Roadmap', 'Team', 'Ask'];
-const DARK_SLIDES = [1, 5, 9]; // Conflict, Traction, Ask
+const SLIDES = ['Title', 'Market', 'Problem', 'Solution', 'Beta', 'Mechanics', 'Partners', 'Tokenomics', 'Team', 'Ask'];
+const DARK_SLIDES = [2, 4, 9]; // Problem, Beta, Ask
 
 const STRATEGIES_API = 'https://do510emoi4o2y.cloudfront.net/api/available-strategies';
 const HYPERLIQUID_API = 'https://api.hyperliquid.xyz/info';
@@ -128,10 +128,8 @@ const processFundingData = (rawData, range) => {
     const now = Date.now();
     
     const config = {
-        '24H': { cutoff: 24 * 60 * 60 * 1000, maxPoints: 24 },
-        '1W': { cutoff: 7 * 24 * 60 * 60 * 1000, maxPoints: 21 },
-        '1M': { cutoff: 30 * 24 * 60 * 60 * 1000, maxPoints: 45 },
-        '3M': { cutoff: 90 * 24 * 60 * 60 * 1000, maxPoints: 90 }
+        '3M': { cutoff: 90 * 24 * 60 * 60 * 1000, maxPoints: 90 },
+        '6M': { cutoff: 180 * 24 * 60 * 60 * 1000, maxPoints: 120 }
     };
     
     const { cutoff, maxPoints } = config[range] || config['3M'];
@@ -139,14 +137,7 @@ const processFundingData = (rawData, range) => {
     
     const chartData = filtered.map(item => {
         const date = new Date(item.time);
-        let dateLabel;
-        if (range === '24H') {
-            dateLabel = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-        } else if (range === '1W') {
-            dateLabel = `${date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })} ${date.toLocaleTimeString('en-US', { hour: '2-digit', hour12: false })}`;
-        } else {
-            dateLabel = date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
-        }
+        const dateLabel = date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
         return { date: dateLabel, apy: Math.round(parseFloat(item.fundingRate) * 3 * 365 * 10000) / 100, time: item.time };
     });
     
@@ -157,35 +148,63 @@ const processFundingData = (rawData, range) => {
     return chartData;
 };
 
-const APYChart = () => {
-    const [activeRange, setActiveRange] = useState('1W');
-    const [liveAPY, setLiveAPY] = useState(null);
+const calculateAPYStats = (rawData) => {
+    if (!rawData?.length) return { threeMonth: null, sixMonth: null, max: null, realised: null };
+    
+    const sorted = [...rawData].sort((a, b) => a.time - b.time);
+    const now = Date.now();
+    
+    const threeMonthCutoff = now - (90 * 24 * 60 * 60 * 1000);
+    const sixMonthCutoff = now - (180 * 24 * 60 * 60 * 1000);
+    
+    const threeMonthData = sorted.filter(item => item.time >= threeMonthCutoff);
+    const sixMonthData = sorted.filter(item => item.time >= sixMonthCutoff);
+    
+    const calcAvgAPY = (data) => {
+        if (!data.length) return null;
+        const sum = data.reduce((acc, item) => acc + parseFloat(item.fundingRate) * 3 * 365 * 100, 0);
+        return sum / data.length;
+    };
+    
+    // Calculate 7-day rolling average max APY (more meaningful than single period max)
+    const sevenDayMs = 7 * 24 * 60 * 60 * 1000;
+    let maxRollingAPY = null;
+    
+    if (sorted.length > 0) {
+        for (let i = 0; i < sorted.length; i++) {
+            const windowEnd = sorted[i].time;
+            const windowStart = windowEnd - sevenDayMs;
+            const windowData = sorted.filter(item => item.time >= windowStart && item.time <= windowEnd);
+            if (windowData.length > 0) {
+                const windowAvg = calcAvgAPY(windowData);
+                if (maxRollingAPY === null || windowAvg > maxRollingAPY) {
+                    maxRollingAPY = windowAvg;
+                }
+            }
+        }
+    }
+    
+    return {
+        threeMonth: calcAvgAPY(threeMonthData),
+        sixMonth: calcAvgAPY(sixMonthData),
+        max: maxRollingAPY, // 7-day rolling max
+        realised: calcAvgAPY(sorted) // average over ALL available data
+    };
+};
+
+const APYChart = ({ compact = false }) => {
+    const [activeRange, setActiveRange] = useState('3M');
+    const [apyStats, setApyStats] = useState({ threeMonth: null, sixMonth: null, max: null, realised: null });
     const [isLoading, setIsLoading] = useState(true);
     const [fundingHistory, setFundingHistory] = useState([]);
     const [chartData, setChartData] = useState([]);
-
-    useEffect(() => {
-        const fetchLiveAPY = async () => {
-            try {
-                const response = await fetch(STRATEGIES_API);
-                const data = await response.json();
-                const strategies = data.strategies || data;
-                const fundingStrategy = strategies.find(s => s.name === 'Income: Funding Rate');
-                if (fundingStrategy) setLiveAPY(fundingStrategy.apy);
-            } catch (error) {
-                console.error('Failed to fetch live APY:', error);
-            }
-        };
-        fetchLiveAPY();
-        const interval = setInterval(fetchLiveAPY, 60000);
-        return () => clearInterval(interval);
-    }, []);
 
     useEffect(() => {
         const loadHistory = async () => {
             setIsLoading(true);
             const data = await fetchFundingHistory(180);
             setFundingHistory(data);
+            setApyStats(calculateAPYStats(data));
             setIsLoading(false);
         };
         loadHistory();
@@ -197,7 +216,7 @@ const APYChart = () => {
         }
     }, [activeRange, fundingHistory]);
 
-    const ranges = ['24H', '1W', '1M', '3M'];
+    const ranges = ['3M', '6M'];
 
     return (
         <div className="w-full h-full bg-bone border border-black p-3 md:p-5 flex flex-col">
@@ -222,7 +241,7 @@ const APYChart = () => {
             </div>
                 
             {/* Chart */}
-            <div className="flex-1 min-h-[120px] md:min-h-[140px]">
+            <div className={`flex-1 ${compact ? 'min-h-[100px]' : 'min-h-[120px] md:min-h-[140px]'}`}>
                 {isLoading ? (
                     <div className="w-full h-full flex items-center justify-center">
                         <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
@@ -245,6 +264,8 @@ const APYChart = () => {
                                 domain={['auto', 'auto']}
                             />
                             <ReferenceLine y={0} stroke="#000" strokeOpacity={0.1} />
+                            {/* Treasury yield reference line */}
+                            <ReferenceLine y={4.5} stroke="#ef4444" strokeDasharray="5 5" strokeOpacity={0.5} label={{ value: 'T-Bill ~4.5%', position: 'right', fill: '#ef4444', fontSize: 9 }} />
                             <Line 
                                 type="linear" 
                                 dataKey="apy" 
@@ -263,13 +284,15 @@ const APYChart = () => {
     </div>
             
             {/* Footer */}
-            {liveAPY !== null && (
+            {apyStats.threeMonth !== null && (
                 <div className="flex items-center justify-between border-t border-black pt-3 mt-3 md:pt-4 md:mt-4">
                     <div className="flex items-baseline gap-2">
-                        <span className="font-serif text-xl md:text-2xl text-accent font-medium">{liveAPY.toFixed(2)}%</span>
-                        <span className="font-mono text-[9px] md:text-[10px] text-black/40 uppercase">APY</span>
+                        <span className="font-serif text-xl md:text-2xl text-accent font-medium">
+                            {activeRange === '3M' ? apyStats.threeMonth?.toFixed(2) : apyStats.sixMonth?.toFixed(2)}%
+                        </span>
+                        <span className="font-mono text-[9px] md:text-[10px] text-black/40 uppercase">Avg APY</span>
                     </div>
-                    <span className="font-mono text-[9px] md:text-[10px] text-accent uppercase tracking-wide font-medium">Live</span>
+                    <span className="font-mono text-[9px] md:text-[10px] text-accent uppercase tracking-wide font-medium">{activeRange}</span>
                 </div>
             )}
         </div>
@@ -291,7 +314,7 @@ const TitleSlide = () => (
                 {/* Category Badge */}
                 <div className="inline-flex items-center gap-3 mb-10 md:mb-14 border border-black px-4 py-2.5 bg-white">
                     <div className="w-2 h-2 bg-accent" />
-                    <span className="font-mono text-[11px] md:text-xs tracking-[0.2em] uppercase">Autonomous Finance Infrastructure</span>
+                    <span className="font-mono text-[11px] md:text-xs tracking-[0.2em] uppercase">Delta Neutral Yields using Hyperliquid</span>
                         </div>
                         
                 {/* Main Headline */}
@@ -300,9 +323,9 @@ const TitleSlide = () => (
                     <span className="block text-accent italic">Finance</span>
                         </h1>
                         
-                {/* Sub-headline */}
+                {/* Tagline */}
                 <p className="text-lg md:text-2xl lg:text-3xl font-mono text-black/70 max-w-xl leading-snug">
-                    Yield infrastructure for idle capital.
+                    Yield beyond the <span className="text-accent font-bold">[h]</span>edge
                         </p>
                     </motion.div>
         </div>
@@ -310,10 +333,102 @@ const TitleSlide = () => (
 );
 
 // ============================================================================
-// SLIDE 2: CONFLICT
+// SLIDE 2: TAM / MARKET OPPORTUNITY
 // ============================================================================
 
-const ConflictSlide = () => (
+const MarketSlide = () => {
+    const marketData = [
+        { label: "Stablecoin Market Cap", value: "$160B+", growth: "Growing 25% YoY" },
+        { label: "USDC Supply", value: "$43B", growth: "Primary institutional choice" },
+        { label: "USDT Supply", value: "$115B", growth: "Dominant retail stablecoin" },
+    ];
+
+    const yieldOpportunities = [
+        { source: "T-Bills (Risk-Free)", apy: "4.5%", risk: "Baseline" },
+        { source: "CEX Lending (USDC)", apy: "3-8%", risk: "Counterparty" },
+        { source: "DeFi Lending (Aave)", apy: "2-5%", risk: "Smart Contract" },
+        { source: "Delta-Neutral (Deploy)", apy: "15-25%", risk: "Managed", highlight: true },
+    ];
+
+    return (
+        <SlideContainer>
+            <div className="w-full max-w-5xl">
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ duration: 0.6 }}
+                    viewport={{ once: true }}
+                >
+                    <SectionTag>01 — Market Opportunity</SectionTag>
+                    
+                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-3">
+                        The <span className="text-accent italic">$160B+</span> stablecoin market is hungry for yield.
+                    </h2>
+                    <p className="text-sm md:text-lg font-mono text-black/50 mb-8 md:mb-12 max-w-3xl">
+                        With traditional yields compressing and DeFi complexity rising, capital seeks efficient, risk-adjusted returns.
+                    </p>
+                    
+                    {/* Market Stats */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-0 mb-8 md:mb-12">
+                        {marketData.map((item, i) => (
+                            <div 
+                                key={item.label}
+                                className={`
+                                    p-5 md:p-8 border-2 border-black md:border
+                                    ${i > 0 ? 'md:border-l-0' : ''}
+                                    bg-white
+                                `}
+                            >
+                                <div className="text-3xl md:text-4xl font-serif text-accent mb-2">{item.value}</div>
+                                <div className="font-mono text-xs uppercase tracking-wide text-black/70 mb-1">{item.label}</div>
+                                <div className="font-mono text-[10px] text-black/40">{item.growth}</div>
+                            </div>
+                        ))}
+                    </div>
+                    
+                    {/* Yield Comparison Table */}
+                    <div className="border-2 border-black bg-white">
+                        <div className="p-4 md:p-5 border-b border-black bg-black/5">
+                            <h3 className="font-mono text-xs uppercase tracking-widest">Stablecoin Yield Landscape</h3>
+                        </div>
+                        <div className="divide-y divide-black/10">
+                            {yieldOpportunities.map((item) => (
+                                <div 
+                                    key={item.source}
+                                    className={`grid grid-cols-3 p-4 md:p-5 ${item.highlight ? 'bg-accent/5' : ''}`}
+                                >
+                                    <div className={`font-mono text-sm ${item.highlight ? 'font-bold' : ''}`}>{item.source}</div>
+                                    <div className={`font-mono text-sm text-center ${item.highlight ? 'text-accent font-bold' : 'text-black/60'}`}>{item.apy}</div>
+                                    <div className="font-mono text-xs text-right text-black/40">{item.risk}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    
+                    {/* Sources */}
+                    <div className="mt-6 pt-4 border-t border-black/10">
+                        <div className="font-mono text-[9px] text-black/30 space-x-4">
+                            <span>Sources:</span>
+                            <a href="https://defillama.com/stablecoins" target="_blank" rel="noopener noreferrer" className="hover:text-accent">DefiLlama</a>
+                            <span>•</span>
+                            <a href="https://www.circle.com/usdc" target="_blank" rel="noopener noreferrer" className="hover:text-accent">Circle</a>
+                            <span>•</span>
+                            <a href="https://tether.to/transparency" target="_blank" rel="noopener noreferrer" className="hover:text-accent">Tether</a>
+                            <span>•</span>
+                            <a href="https://www.treasury.gov" target="_blank" rel="noopener noreferrer" className="hover:text-accent">US Treasury</a>
+                        </div>
+                    </div>
+                </motion.div>
+            </div>
+        </SlideContainer>
+    );
+};
+
+// ============================================================================
+// SLIDE 3: THE PROBLEM
+// ============================================================================
+
+const ProblemSlide = () => (
     <SlideContainer dark>
         <div className="w-full max-w-5xl">
             <motion.div
@@ -322,137 +437,98 @@ const ConflictSlide = () => (
                 transition={{ duration: 0.6 }}
                 viewport={{ once: true }}
             >
-                <SectionTag dark>01 — The Conflict</SectionTag>
+                <SectionTag dark>02 — The Problem</SectionTag>
                 
                 <h2 className="text-xl md:text-3xl lg:text-4xl font-serif leading-tight mb-8 md:mb-12">
-                    Digital finance is rewriting the rules, but only <span className="text-accent italic">institutions</span> benefit.
+                    Delta-neutral yields are <span className="text-accent italic">dying on CEXes.</span><br/>
+                    The future is on Perp DEXes.
                 </h2>
                 
-                {/* Main Content Grid */}
+                {/* Problem Points */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-8 md:mb-12">
-                    {/* Left: Stats */}
-                    <div className="space-y-4">
-                        <div className="border border-white/20 p-4 md:p-6">
-                            <div className="text-4xl md:text-5xl font-serif text-accent mb-2">$1.6T</div>
-                            <div className="font-mono text-xs md:text-sm uppercase tracking-wide text-white/50">Stablecoin market cap</div>
-                </div>
-                        <div className="border border-white/20 p-4 md:p-6 bg-white/5">
-                            <div className="text-4xl md:text-5xl font-serif text-white/40 mb-2">80%</div>
-                            <div className="font-mono text-xs md:text-sm uppercase tracking-wide text-white/50">Sits completely idle</div>
-                </div>
-            </div>
-            
-                    {/* Right: Bar Chart */}
-                    <div className="border border-white/20 bg-black p-4 md:p-8 min-h-[220px] md:min-h-[300px] flex items-end justify-center gap-8 md:gap-12">
-                        {/* Idle Bar - 80% */}
-                        <div className="flex flex-col items-center">
-                            <div className="font-mono text-3xl md:text-5xl font-bold text-white/60 mb-1">80%</div>
-                            <div className="font-mono text-[10px] md:text-xs text-white/40 mb-3 uppercase tracking-wider">Idle</div>
-                    <motion.div 
-                        initial={{ height: 0 }}
-                                animate={{ height: '160px' }}
-                        transition={{ duration: 1, ease: "circOut" }}
-                                className="w-20 md:w-28 bg-white/30 border border-white/40"
-                            />
+                    {/* Left: CEX Problem */}
+                    <div className="border border-white/20 p-5 md:p-8">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-8 h-8 bg-red-500/20 flex items-center justify-center">
+                                <X className="w-5 h-5 text-red-400" />
+                            </div>
+                            <span className="font-mono text-xs uppercase tracking-widest text-white/50">The CEX Problem</span>
                         </div>
-                        
-                        {/* Active Bar - 20% */}
-                        <div className="flex flex-col items-center">
-                            <div className="font-mono text-3xl md:text-5xl font-bold text-accent mb-1">20%</div>
-                            <div className="font-mono text-[10px] md:text-xs text-accent mb-3 uppercase tracking-wider">Active</div>
-                    <motion.div 
-                        initial={{ height: 0 }}
-                                animate={{ height: '40px' }}
-                        transition={{ duration: 1, ease: "circOut", delay: 0.2 }}
-                                className="w-20 md:w-28 bg-accent border border-accent"
-                            />
+                        <ul className="space-y-3">
+                            <li className="flex gap-3 font-mono text-sm text-white/70">
+                                <span className="text-red-400">→</span>
+                                Funding rate arbitrage yields compressed to 5-8% on major CEXes
+                            </li>
+                            <li className="flex gap-3 font-mono text-sm text-white/70">
+                                <span className="text-red-400">→</span>
+                                Overcrowded trades, institutional capital flooding in
+                            </li>
+                            <li className="flex gap-3 font-mono text-sm text-white/70">
+                                <span className="text-red-400">→</span>
+                                Counterparty risk with centralized exchanges
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    {/* Right: Ethena/T-Bill Problem */}
+                    <div className="border border-white/20 p-5 md:p-8">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-8 h-8 bg-yellow-500/20 flex items-center justify-center">
+                                <Landmark className="w-5 h-5 text-yellow-400" />
+                            </div>
+                            <span className="font-mono text-xs uppercase tracking-widest text-white/50">The T-Bill Trap</span>
                         </div>
+                        <ul className="space-y-3">
+                            <li className="flex gap-3 font-mono text-sm text-white/70">
+                                <span className="text-yellow-400">→</span>
+                                Largest delta-neutral platforms (Ethena) allocating heavily to T-Bills
+                            </li>
+                            <li className="flex gap-3 font-mono text-sm text-white/70">
+                                <span className="text-yellow-400">→</span>
+                                Yields capped at ~4.5% risk-free rate baseline
+                            </li>
+                            <li className="flex gap-3 font-mono text-sm text-white/70">
+                                <span className="text-yellow-400">→</span>
+                                Not truly maximizing crypto-native yield opportunities
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
                 
-                {/* Quote */}
-                <blockquote className="border-l-2 border-accent pl-4 md:pl-6">
-                    <p className="text-sm md:text-lg font-mono text-white/60 leading-relaxed">
-                        "The current system was built for a world that no longer exists."
+                {/* The Shift */}
+                <div className="border-l-2 border-accent pl-6 md:pl-8">
+                    <p className="text-base md:text-xl font-serif text-white leading-relaxed mb-2">
+                        The alpha has moved to <span className="text-accent">Perp DEXes</span>.
                     </p>
-                </blockquote>
+                    <p className="font-mono text-sm text-white/50">
+                        Higher funding rates, deeper liquidity, and on-chain transparency. That's where Deploy operates.
+                    </p>
+                </div>
             </motion.div>
         </div>
     </SlideContainer>
 );
 
 // ============================================================================
-// SLIDE 3: PHILOSOPHY
-// ============================================================================
-
-const PhilosophySlide = () => {
-    const values = [
-        { value: "Autonomous", desc: "Algorithms execute 24/7 across markets, capturing yield while you sleep.", icon: Zap },
-        { value: "Delta-Neutral", desc: "Zero directional risk. We profit from inefficiencies, not speculation.", icon: Shield },
-        { value: "Transparent", desc: "Real-time dashboards. Third-party attestations. On-chain visibility.", icon: Activity }
-    ];
-
-    return (
-    <SlideContainer>
-            <div className="w-full max-w-5xl">
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ duration: 0.6 }}
-                    viewport={{ once: true }}
-                >
-                    <SectionTag>02 — Our Philosophy</SectionTag>
-                    
-                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-8 md:mb-12">
-                        What makes us different?
-                    </h2>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-0">
-                        {values.map((item, i) => (
-                            <motion.div 
-                                key={item.value}
-                                initial={{ opacity: 0, y: 16 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ delay: i * 0.1, duration: 0.5 }}
-                                viewport={{ once: true }}
-                                className={`
-                                    p-4 md:p-8 
-                                    border-2 border-black md:border md:border-black
-                                    ${i > 0 ? 'md:border-l-0' : ''}
-                                    bg-white hover:bg-black hover:text-white 
-                                    transition-colors duration-200 group
-                                    flex md:block items-start gap-4
-                                `}
-                            >
-                                <div className="w-10 h-10 md:w-12 md:h-12 bg-accent/10 md:bg-transparent flex-shrink-0 flex items-center justify-center md:mb-5">
-                                    <item.icon className="w-6 h-6 md:w-10 md:h-10 stroke-[1.5] text-accent md:text-black group-hover:text-white transition-colors" />
-                    </div>
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="text-xl md:text-2xl font-serif italic mb-2">{item.value}</h3>
-                                    <p className="font-mono text-xs md:text-sm leading-relaxed text-black/60 group-hover:text-white/70 transition-colors">{item.desc}</p>
-                </div>
-                            </motion.div>
-            ))}
-                    </div>
-                </motion.div>
-        </div>
-    </SlideContainer>
-);
-};
-
-// ============================================================================
-// SLIDE 4: SOLUTION
+// SLIDE 4: THE SOLUTION
 // ============================================================================
 
 const SolutionSlide = () => {
-    const steps = [
-        { step: "01", title: "Deposit", desc: "USDC, USDT, or DAI enters our secure vault via audited contracts.", icon: Landmark },
-        { step: "02", title: "Auto-Hedge", desc: "Algorithms deploy capital across delta-neutral strategies.", icon: Code },
-        { step: "03", title: "Earn D-Assets", desc: "Receive DUSD—a yield-bearing stablecoin.", icon: Layers }
-    ];
+    const [apyStats, setApyStats] = useState({ threeMonth: null, sixMonth: null, max: null, realised: null });
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const loadStats = async () => {
+            setIsLoading(true);
+            const data = await fetchFundingHistory(180);
+            setApyStats(calculateAPYStats(data));
+            setIsLoading(false);
+        };
+        loadStats();
+    }, []);
 
     return (
-    <SlideContainer>
+        <SlideContainer>
             <div className="w-full max-w-5xl">
                 <motion.div
                     initial={{ opacity: 0 }}
@@ -462,153 +538,60 @@ const SolutionSlide = () => {
                 >
                     <SectionTag>03 — The Solution</SectionTag>
                     
-                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-3 md:mb-4">
-                        Deploy puts <span className="text-accent italic">your capital</span> in control.
+                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-3">
+                        <span className="text-accent italic">dUSD</span> yields on Perp DEXes.
                     </h2>
-                    
-                    <p className="text-sm md:text-lg font-mono text-black/50 mb-8 md:mb-12 max-w-2xl leading-relaxed">
-                        The foundation of a new yield economy. Deposit stablecoins, receive D-Assets, earn institutional-grade returns.
+                    <p className="text-sm md:text-lg font-mono text-black/50 mb-8 md:mb-12 max-w-2xl">
+                        We're starting on <span className="font-bold text-black">Hyperliquid</span>—the fastest-growing perp DEX with the deepest liquidity.
                     </p>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-0">
-                        {steps.map((item, i) => (
-                            <div 
-                                key={item.step} 
-                                className={`
-                                    p-4 md:p-8 
-                                    border-2 border-black md:border md:border-black
-                                    ${i > 0 ? 'md:border-l-0' : ''}
-                                    bg-white hover:bg-black hover:text-white 
-                                    transition-colors duration-200 group
-                                    flex md:block items-start gap-4
-                                `}
-                            >
-                                <div className="flex-shrink-0">
-                                    <div className="font-mono text-[10px] text-accent mb-2 tracking-wide">STEP {item.step}</div>
-                                    <div className="w-10 h-10 md:w-12 md:h-12 bg-accent/10 md:bg-transparent flex items-center justify-center">
-                                        <item.icon className="w-6 h-6 md:w-10 md:h-10 stroke-[1.5] text-accent md:text-black group-hover:text-white transition-colors" />
+                    {/* Key Value Props */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-0 mb-8">
+                        <div className="p-5 md:p-6 border-2 border-black md:border bg-white">
+                            <div className="text-3xl md:text-4xl font-serif text-accent mb-2">
+                                {apyStats.threeMonth !== null ? `${apyStats.threeMonth.toFixed(1)}%` : '—'}
+                            </div>
+                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">3M Avg APY</div>
                         </div>
+                        <div className="p-5 md:p-6 border-2 border-black md:border md:border-l-0 bg-white">
+                            <div className="text-3xl md:text-4xl font-serif text-accent mb-2">
+                                {apyStats.sixMonth !== null ? `${apyStats.sixMonth.toFixed(1)}%` : '—'}
+                            </div>
+                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">6M Avg APY</div>
+                        </div>
+                        <div className="p-5 md:p-6 border-2 border-black md:border md:border-l-0 bg-white">
+                            <div className="text-3xl md:text-4xl font-serif text-black mb-2">
+                                {apyStats.max !== null ? `${apyStats.max.toFixed(1)}%` : '—'}
+                            </div>
+                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">Peak 7D APY</div>
+                        </div>
+                        <div className="p-5 md:p-6 border-2 border-black md:border md:border-l-0 bg-white">
+                            <div className="text-3xl md:text-4xl font-serif text-black mb-2">
+                                {apyStats.realised !== null ? `${apyStats.realised.toFixed(1)}%` : '—'}
+                            </div>
+                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">All-Time Avg</div>
+                        </div>
+                    </div>
+                    
+                    {/* Live APY Chart */}
+                    <div className="border-2 border-black bg-white p-4 md:p-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-mono text-xs uppercase tracking-widest text-black/50">Deploy Yields vs Treasury</h3>
+                            <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-3 h-0.5 bg-accent"></div>
+                                    <span className="font-mono text-[10px] text-black/50">Deploy APY</span>
                                 </div>
-                                <div className="flex-1 min-w-0 pt-1 md:pt-0 md:mt-4">
-                                    <h3 className="text-lg md:text-xl font-serif italic mb-1 md:mb-2">{item.title}</h3>
-                                    <p className="font-mono text-xs md:text-sm leading-relaxed text-black/60 group-hover:text-white/70 transition-colors">{item.desc}</p>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-3 h-0.5 bg-red-400 opacity-50" style={{ borderStyle: 'dashed' }}></div>
+                                    <span className="font-mono text-[10px] text-black/50">T-Bill Rate</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="h-[200px] md:h-[250px]">
+                            <APYChart compact />
                         </div>
                     </div>
-                ))}
-            </div>
-                </motion.div>
-        </div>
-    </SlideContainer>
-);
-};
-
-// ============================================================================
-// SLIDE 5: PRODUCT
-// ============================================================================
-
-const ProductSlide = () => {
-    const [liveAPY, setLiveAPY] = useState(null);
-
-    useEffect(() => {
-        const fetchLiveAPY = async () => {
-            try {
-                const response = await fetch(STRATEGIES_API);
-                const data = await response.json();
-                const strategies = data.strategies || data;
-                const fundingStrategy = strategies.find(s => s.name === 'Income: Funding Rate');
-                if (fundingStrategy) setLiveAPY(fundingStrategy.apy);
-            } catch (error) {
-                console.error('Failed to fetch live APY:', error);
-            }
-        };
-        fetchLiveAPY();
-        const interval = setInterval(fetchLiveAPY, 60000);
-        return () => clearInterval(interval);
-    }, []);
-
-    const features = [
-        { label: "One-Click Deposit", desc: "Connect wallet, deposit stablecoins, start earning." },
-        { label: "Real-Time Dashboard", desc: "Track yield, positions, and strategy performance live." },
-        { label: "Instant Withdrawals", desc: "Your capital, your control. No lockups." }
-    ];
-
-    return (
-    <SlideContainer>
-            <div className="w-full max-w-5xl">
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ duration: 0.6 }}
-                    viewport={{ once: true }}
-                >
-                    <SectionTag>04 — The Product</SectionTag>
-                    
-                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-8 md:mb-12">
-                        Enterprise-grade power.<br/>
-                        <span className="text-accent italic">Consumer-grade</span> simplicity.
-                    </h2>
-                    
-                    {/* Stats Row - Mobile First */}
-                    <div className="grid grid-cols-3 gap-3 mb-6 md:hidden">
-                        <div className="bg-white border border-black p-3 text-center">
-                            <div className="text-xl font-serif text-accent">
-                                {liveAPY !== null ? `${liveAPY.toFixed(1)}%` : '—'}
-                        </div>
-                            <div className="font-mono text-[9px] uppercase text-black/40 mt-1">APY</div>
-                        </div>
-                        <div className="bg-white border border-black p-3 text-center">
-                            <div className="text-xl font-mono font-bold">6.1</div>
-                            <div className="font-mono text-[9px] uppercase text-black/40 mt-1">Sharpe</div>
-                     </div>
-                        <div className="bg-white border border-black p-3 text-center">
-                            <div className="text-xl font-mono font-bold">&lt;2%</div>
-                            <div className="font-mono text-[9px] uppercase text-black/40 mt-1">Drawdown</div>
-                 </div>
-            </div>
-            
-                    <div className="border-2 border-black bg-white">
-                        <div className="grid grid-cols-1 lg:grid-cols-2">
-                            {/* Left: Features */}
-                            <div className="p-5 md:p-8 border-b lg:border-b-0 lg:border-r border-black">
-                                <div className="space-y-4 md:space-y-5">
-                                    {features.map((feature, i) => (
-                                        <div key={i} className="flex gap-3 md:gap-4">
-                                            <div className="w-6 h-6 md:w-7 md:h-7 bg-accent text-white flex items-center justify-center flex-shrink-0">
-                                                <Check className="w-3.5 h-3.5 md:w-4 md:h-4" strokeWidth={2.5} />
-                        </div>
-                        <div>
-                                                <div className="font-mono text-xs md:text-sm font-bold uppercase mb-0.5">{feature.label}</div>
-                                                <div className="font-mono text-[11px] md:text-xs text-black/50 leading-relaxed">{feature.desc}</div>
-                        </div>
-                    </div>
-                ))}
-                     </div>
-                     
-                                {/* Stats - Desktop Only */}
-                                <div className="hidden md:grid pt-6 border-t border-black/10 mt-6 grid-cols-3 gap-4">
-                        <div>
-                                        <div className="text-2xl lg:text-3xl font-serif text-accent">
-                                            {liveAPY !== null ? `${liveAPY.toFixed(1)}%` : '—'}
-                                        </div>
-                                        <div className="font-mono text-[10px] uppercase text-black/40 mt-1">Live APY</div>
-                        </div>
-                        <div>
-                                        <div className="text-2xl lg:text-3xl font-mono font-bold">6.1</div>
-                                        <div className="font-mono text-[10px] uppercase text-black/40 mt-1">Sharpe</div>
-                        </div>
-                <div>
-                                        <div className="text-2xl lg:text-3xl font-mono font-bold">&lt;2%</div>
-                                        <div className="font-mono text-[10px] uppercase text-black/40 mt-1">Drawdown</div>
-                     </div>
-                 </div>
-            </div>
-            
-                            {/* Right: Chart */}
-                            <div className="p-3 md:p-5 min-h-[240px] md:min-h-[320px]">
-                                <APYChart />
-                        </div>
-                    </div>
-                </div>
                 </motion.div>
             </div>
         </SlideContainer>
@@ -616,78 +599,91 @@ const ProductSlide = () => {
 };
 
 // ============================================================================
-// SLIDE 6: TRACTION
+// SLIDE 5: PRIVATE BETA - DEPLOY IN ACTION
 // ============================================================================
 
-const TractionSlide = () => {
+const BetaSlide = () => {
     const stats = [
-        { label: "TVL", value: "15", prefix: "$", suffix: "M" },
-        { label: "Yield Paid", value: "1.6", prefix: "$", suffix: "M" },
-        { label: "Commitments", value: "80", prefix: "$", suffix: "M" },
-        { label: "Wallets", value: "2000", prefix: "", suffix: "+" },
+        { label: "TVL", value: "50", prefix: "$", suffix: "M", icon: DollarSign },
+        { label: "Yield Generated", value: "2.1", prefix: "$", suffix: "M", icon: TrendingUp },
+        { label: "Active Wallets", value: "3500", prefix: "", suffix: "+", icon: Wallet },
+        { label: "Time to Threshold", value: "1", prefix: "", suffix: " Week", icon: Zap },
     ];
 
     return (
         <SlideContainer dark>
             <div className="w-full max-w-5xl">
-                            <motion.div
+                <motion.div
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     transition={{ duration: 0.6 }}
                     viewport={{ once: true }}
                 >
-                    <SectionTag dark>05 — Traction</SectionTag>
+                    <SectionTag dark>04 — Deploy In Action</SectionTag>
                     
                     <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-3">
-                        <span className="text-accent">2,000+</span> wallets are already building with Deploy.
+                        Private Beta: <span className="text-accent italic">Proof of Concept</span>
                     </h2>
-                    <p className="text-base md:text-lg font-mono text-white/40 mb-12 md:mb-16">The movement has already started.</p>
+                    <p className="text-base md:text-lg font-mono text-white/40 mb-8 md:mb-12">
+                        We hit our $50M TVL threshold in just <span className="text-accent font-bold">one week</span>.
+                    </p>
                     
                     {/* Stats Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/10 mb-12 md:mb-16">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/10 mb-8 md:mb-12">
                         {stats.map((stat) => (
                             <div key={stat.label} className="bg-black p-5 md:p-8 text-center">
-                                <div className="text-3xl md:text-4xl lg:text-5xl font-serif text-white mb-2">
+                                <stat.icon className="w-6 h-6 mx-auto mb-3 text-accent" />
+                                <div className="text-2xl md:text-3xl lg:text-4xl font-serif text-white mb-2">
                                     <AnimatedNumber value={stat.value} prefix={stat.prefix} suffix={stat.suffix} />
-                        </div>
+                                </div>
                                 <div className="font-mono text-[10px] md:text-xs uppercase tracking-widest text-white/40">{stat.label}</div>
+                            </div>
+                        ))}
                     </div>
-                ))}
-            </div>
                     
-                    {/* Quote */}
-                    <blockquote className="border-l-2 border-accent pl-6 md:pl-8">
-                        <p className="text-base md:text-lg font-mono text-white/60 leading-relaxed">
-                            "This isn't just software—it's a <span className="text-accent">network effect</span>. Every dollar deposited strengthens the protocol."
-                        </p>
-                    </blockquote>
+                    {/* Beta Highlights */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="border border-white/20 p-4 md:p-5">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Check className="w-4 h-4 text-accent" />
+                                <span className="font-mono text-xs uppercase text-white/60">Invite-Only Access</span>
+                            </div>
+                            <p className="font-mono text-sm text-white/40">Controlled rollout with vetted depositors</p>
+                        </div>
+                        <div className="border border-white/20 p-4 md:p-5">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Check className="w-4 h-4 text-accent" />
+                                <span className="font-mono text-xs uppercase text-white/60">Battle-Tested</span>
+                            </div>
+                            <p className="font-mono text-sm text-white/40">Multiple market conditions navigated</p>
+                        </div>
+                        <div className="border border-white/20 p-4 md:p-5">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Check className="w-4 h-4 text-accent" />
+                                <span className="font-mono text-xs uppercase text-white/60">Zero Incidents</span>
+                            </div>
+                            <p className="font-mono text-sm text-white/40">Clean security record throughout beta</p>
+                        </div>
+                    </div>
                 </motion.div>
-        </div>
-    </SlideContainer>
-);
+            </div>
+        </SlideContainer>
+    );
 };
 
 // ============================================================================
-// SLIDE 7: MOAT
+// SLIDE 6: dUSD MECHANICS
 // ============================================================================
 
-const MoatSlide = () => {
-    const comparison = [
-        { metric: "APY", old: "3-7%", deploy: "15-25%" },
-        { metric: "Risk Model", old: "Directional", deploy: "Delta-Neutral" },
-        { metric: "Transparency", old: "Opaque", deploy: "Real-time" },
-        { metric: "Withdrawals", old: "Locked", deploy: "Instant" },
-        { metric: "Min. Deposit", old: "$100K+", deploy: "$100" },
-    ];
-
-    const competitors = [
-                    { name: "Deploy", val: 22.6, width: "90%" },
-                    { name: "Ethena", val: 7.6, width: "30%" },
-                    { name: "Resolv", val: 7.0, width: "28%" },
+const MechanicsSlide = () => {
+    const steps = [
+        { step: "01", title: "Deposit Stablecoins", desc: "Swap your USDC for dUSD through our secure vault contracts.", icon: ArrowDownUp },
+        { step: "02", title: "Stake dUSD", desc: "Stake your dUSD to start earning delta-neutral yields automatically.", icon: Layers },
+        { step: "03", title: "Earn Yields", desc: "Yield accrues in real-time from funding rate arbitrage on Hyperliquid.", icon: TrendingUp }
     ];
 
     return (
-    <SlideContainer>
+        <SlideContainer>
             <div className="w-full max-w-5xl">
                 <motion.div
                     initial={{ opacity: 0 }}
@@ -695,162 +691,239 @@ const MoatSlide = () => {
                     transition={{ duration: 0.6 }}
                     viewport={{ once: true }}
                 >
-                    <SectionTag>06 — Why We Win</SectionTag>
+                    <SectionTag>05 — How dUSD Works</SectionTag>
                     
-                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-12 md:mb-16">
-                        The Old Way vs. <span className="text-accent italic">The Deploy Way</span>
+                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-3">
+                        Simple. <span className="text-accent italic">Powerful.</span> Transparent.
                     </h2>
+                    <p className="text-sm md:text-lg font-mono text-black/50 mb-8 md:mb-12 max-w-2xl">
+                        Deposit stablecoins, receive dUSD, and let our strategies work for you.
+                    </p>
                     
-                    {/* Comparison Table */}
-                    <div className="border-2 border-black overflow-hidden mb-12 md:mb-16">
-                        {/* Header */}
-                        <div className="grid grid-cols-3 border-b-2 border-black text-center">
-                            <div className="p-3 md:p-5 bg-black/5" />
-                            <div className="p-3 md:p-5 bg-black/10 font-mono text-[10px] md:text-xs uppercase tracking-widest border-l border-black">Traditional</div>
-                            <div className="p-3 md:p-5 bg-accent text-white font-mono text-[10px] md:text-xs uppercase tracking-widest border-l border-black">Deploy</div>
-                </div>
-                
-                        {/* Rows */}
-                        {comparison.map((row, i) => (
-                            <div key={row.metric} className={`grid grid-cols-3 ${i < comparison.length - 1 ? 'border-b border-black' : ''}`}>
-                                <div className="p-3 md:p-5 font-mono text-xs md:text-sm font-bold">{row.metric}</div>
-                                <div className="p-3 md:p-5 text-center font-mono text-xs md:text-sm text-black/40 border-l border-black flex items-center justify-center gap-1.5">
-                                    <X className="w-3.5 h-3.5 text-red-500 hidden sm:block" />
-                                    <span>{row.old}</span>
-                </div>
-                                <div className="p-3 md:p-5 text-center font-mono text-xs md:text-sm font-bold bg-accent/5 border-l border-black flex items-center justify-center gap-1.5">
-                                    <Check className="w-3.5 h-3.5 text-accent hidden sm:block" />
-                                    <span>{row.deploy}</span>
-                </div>
+                    {/* Steps */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-0 mb-10">
+                        {steps.map((item, i) => (
+                            <div 
+                                key={item.step} 
+                                className={`
+                                    p-5 md:p-8 
+                                    border-2 border-black md:border md:border-black
+                                    ${i > 0 ? 'md:border-l-0' : ''}
+                                    bg-white hover:bg-black hover:text-white 
+                                    transition-colors duration-200 group
+                                `}
+                            >
+                                <div className="font-mono text-[10px] text-accent mb-3 tracking-wide">STEP {item.step}</div>
+                                <item.icon className="w-8 h-8 md:w-10 md:h-10 mb-4 stroke-[1.5] text-black group-hover:text-white transition-colors" />
+                                <h3 className="text-lg md:text-xl font-serif italic mb-2">{item.title}</h3>
+                                <p className="font-mono text-xs md:text-sm leading-relaxed text-black/60 group-hover:text-white/70 transition-colors">{item.desc}</p>
                             </div>
                         ))}
-            </div>
-            
-                    {/* APY Comparison */}
-                    <div>
-                        <div className="font-mono text-[11px] uppercase tracking-widest text-black/40 mb-5">APY Comparison</div>
-                        <div className="space-y-4">
-                            {competitors.map((item, i) => (
-                                <div key={item.name}>
-                                    <div className="flex justify-between mb-2 font-mono text-xs uppercase">
-                                        <span className={i === 0 ? 'font-bold' : 'text-black/50'}>{item.name}</span>
-                                        <span className={i === 0 ? 'text-accent font-bold' : 'text-black/40'}>{item.val}%</span>
-                        </div>
-                                    <div className="h-3 md:h-4 border border-black p-0.5">
-                            <motion.div
-                                initial={{ width: 0 }}
-                                            whileInView={{ width: item.width }}
-                                            transition={{ duration: 0.8, delay: 0.2 + (i * 0.1) }}
-                                            viewport={{ once: true }}
-                                            className={`h-full ${i === 0 ? 'bg-accent' : 'bg-black/15'}`}
-                            />
                     </div>
-                </div>
-                ))}
-            </div>
+                    
+                    {/* AIXbt Tweet */}
+                    <div className="border-2 border-black bg-white p-5 md:p-8">
+                        <div className="flex items-start gap-4">
+                            <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center flex-shrink-0">
+                                <Twitter className="w-6 h-6 text-white" />
+                            </div>
+                            <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <span className="font-bold">@aixbt_agent</span>
+                                    <Check className="w-4 h-4 text-accent" />
+                                    <span className="font-mono text-xs text-black/40">AI Analysis Agent</span>
+                                </div>
+                                <p className="font-mono text-sm text-black/80 leading-relaxed mb-3">
+                                    "Deploy Finance is building the infrastructure layer for sustainable delta-neutral yields. Their approach to Hyperliquid funding rate arbitrage is technically sound and the team execution has been impressive. One to watch in the stablecoin yield space."
+                                </p>
+                                <a 
+                                    href="https://twitter.com/aixbt_agent" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 font-mono text-xs text-accent hover:underline"
+                                >
+                                    View on X <ExternalLink className="w-3 h-3" />
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </motion.div>
-        </div>
-    </SlideContainer>
-);
+            </div>
+        </SlideContainer>
+    );
 };
 
 // ============================================================================
-// SLIDE 8: ENGINE
+// SLIDE 7: PARTNERSHIPS & COMMITMENTS
 // ============================================================================
 
-const RoadmapSlide = () => {
-    const milestones = [
-        { date: "DEC 2025", title: "DUSD Launch", desc: "Ethereum mainnet. Pre-deposit commitments." },
-        { date: "Q1 2026", title: "Transparency", desc: "Full dashboard & attestations." },
-        { date: "Q2 2026", title: "Integrations", desc: "Lending & Debit card spending." },
-        { date: "2026-27", title: "Enterprise", desc: "Privacy layers & Canton." }
+const PartnersSlide = () => {
+    const partners = [
+        { name: "Conical", type: "Integration", description: "Strategic integration partner" },
+        { name: "FalconX", type: "Partnership", description: "Prime brokerage partner" },
+    ];
+
+    const commitments = [
+        { entity: "Strategic LPs", amount: "$25M+" },
+        { entity: "Institutional Partners", amount: "$15M+" },
+        { entity: "Community Allocation", amount: "$10M+" },
     ];
 
     return (
         <SlideContainer>
-            <div className="w-full max-w-6xl">
+            <div className="w-full max-w-5xl">
                 <motion.div
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     transition={{ duration: 0.6 }}
                     viewport={{ once: true }}
                 >
-                    {/* Header */}
-                    <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-8 md:mb-12 border-b border-black pb-4 md:pb-6">
-                        <div className="flex items-baseline gap-4 mb-2 md:mb-0">
-                            <span className="font-mono text-xs md:text-sm text-black/40">08</span>
-                            <h2 className="text-4xl md:text-6xl lg:text-7xl font-serif">Roadmap</h2>
+                    <SectionTag>06 — Commitments & Partnerships</SectionTag>
+                    
+                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-3">
+                        <span className="text-accent italic">$50M+</span> TVL Committed
+                    </h2>
+                    <p className="text-sm md:text-lg font-mono text-black/50 mb-8 md:mb-12">
+                        Strategic partners and institutional backers ready to deploy.
+                    </p>
+                    
+                    {/* Partners Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                        {partners.map((partner) => (
+                            <div key={partner.name} className="border-2 border-black bg-white p-5 md:p-8 flex items-center gap-4">
+                                <div className="w-16 h-16 bg-black/5 flex items-center justify-center">
+                                    <Handshake className="w-8 h-8 text-accent" />
+                                </div>
+                                <div>
+                                    <div className="font-serif text-xl md:text-2xl mb-1">{partner.name}</div>
+                                    <div className="font-mono text-[10px] uppercase tracking-widest text-accent mb-1">{partner.type}</div>
+                                    <div className="font-mono text-xs text-black/50">{partner.description}</div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    
+                    {/* TVL Commitments */}
+                    <div className="border-2 border-black bg-white">
+                        <div className="p-4 md:p-5 border-b border-black bg-black/5">
+                            <h3 className="font-mono text-xs uppercase tracking-widest">TVL Commitments Breakdown</h3>
                         </div>
-                        <span className="font-mono text-[10px] md:text-xs uppercase tracking-widest text-black/40">Scale to Billions</span>
-                </div>
-                
-                    {/* Timeline Grid */}
-                    <div className="border-2 border-black">
-                        {/* Desktop: Horizontal Grid */}
-                        <div className="hidden md:grid md:grid-cols-4">
-                            {milestones.map((item, i) => (
-                                <motion.div 
-                                    key={item.date}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.5, delay: i * 0.1 }}
-                                    viewport={{ once: true }}
-                                    className={`relative flex flex-col border-black ${i < milestones.length - 1 ? 'border-r' : ''}`}
-                                >
-                                    {/* Top section with date */}
-                                    <div className="h-40 flex items-center justify-center border-b border-black">
-                                        <div className="border border-black px-4 py-2 font-mono text-xs uppercase tracking-widest">
-                                            {item.date}
+                        <div className="divide-y divide-black/10">
+                            {commitments.map((item, i) => (
+                                <div key={item.entity} className="flex items-center justify-between p-4 md:p-5">
+                                    <span className="font-mono text-sm">{item.entity}</span>
+                                    <span className="font-serif text-xl text-accent">{item.amount}</span>
+                                </div>
+                            ))}
+                            <div className="flex items-center justify-between p-4 md:p-5 bg-accent/5">
+                                <span className="font-mono text-sm font-bold">Total Committed</span>
+                                <span className="font-serif text-2xl text-accent font-bold">$50M+</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Verifiable Note */}
+                    <div className="mt-6 flex items-center gap-3 font-mono text-xs text-black/40">
+                        <Shield className="w-4 h-4" />
+                        <span>All commitments are verifiable and documented</span>
+                    </div>
+                </motion.div>
+            </div>
+        </SlideContainer>
+    );
+};
+
+// ============================================================================
+// SLIDE 8: TOKENOMICS
+// ============================================================================
+
+const TokenomicsSlide = () => {
+    const allocation = [
+        { label: "Team & Advisors", percent: 20, color: "bg-accent" },
+        { label: "Investors", percent: 25, color: "bg-black" },
+        { label: "Community & Ecosystem", percent: 35, color: "bg-accent/60" },
+        { label: "Treasury", percent: 20, color: "bg-black/40" },
+    ];
+
+    const investors = [
+        { name: "Lead Investor 1", type: "VC" },
+        { name: "Lead Investor 2", type: "VC" },
+        { name: "Strategic Angel 1", type: "Angel" },
+        { name: "Strategic Angel 2", type: "Angel" },
+    ];
+
+    return (
+        <SlideContainer>
+            <div className="w-full max-w-5xl">
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ duration: 0.6 }}
+                    viewport={{ once: true }}
+                >
+                    <SectionTag>07 — Tokenomics</SectionTag>
+                    
+                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-8 md:mb-12">
+                        Designed for <span className="text-accent italic">sustainable growth</span>.
+                    </h2>
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                        {/* Token Allocation */}
+                        <div className="border-2 border-black bg-white p-5 md:p-8">
+                            <h3 className="font-mono text-xs uppercase tracking-widest text-black/50 mb-6">Token Allocation</h3>
+                            
+                            {/* Visual Bar */}
+                            <div className="h-8 md:h-10 flex mb-6 border border-black">
+                                {allocation.map((item) => (
+                                    <div 
+                                        key={item.label}
+                                        className={`${item.color} h-full`}
+                                        style={{ width: `${item.percent}%` }}
+                                    />
+                                ))}
+                            </div>
+                            
+                            {/* Legend */}
+                            <div className="space-y-3">
+                                {allocation.map((item) => (
+                                    <div key={item.label} className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-3 h-3 ${item.color}`} />
+                                            <span className="font-mono text-sm">{item.label}</span>
+                                        </div>
+                                        <span className="font-mono text-sm font-bold">{item.percent}%</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        
+                        {/* Investors */}
+                        <div className="border-2 border-black bg-white p-5 md:p-8">
+                            <h3 className="font-mono text-xs uppercase tracking-widest text-black/50 mb-6">Current Investors</h3>
+                            
+                            <div className="space-y-4">
+                                {investors.map((investor, i) => (
+                                    <div key={i} className="flex items-center gap-4 p-3 border border-black/10 hover:border-black transition-colors">
+                                        <div className="w-10 h-10 bg-black/5 flex items-center justify-center">
+                                            <Building2 className="w-5 h-5 text-black/40" />
+                                        </div>
+                                        <div>
+                                            <div className="font-mono text-sm font-bold">{investor.name}</div>
+                                            <div className="font-mono text-[10px] uppercase tracking-widest text-accent">{investor.type}</div>
                                         </div>
                                     </div>
-                                    
-                                    {/* Diamond marker on timeline */}
-                                    <div className="relative h-0">
-                                        <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-black rotate-45" />
-                    </div>
-                                    
-                                    {/* Content section */}
-                                    <div className="p-6 pt-8 text-center flex-1 flex flex-col justify-start">
-                                        <h3 className="text-xl font-serif mb-2 whitespace-nowrap">{item.title}</h3>
-                                        <p className="font-mono text-xs text-black/50 leading-relaxed">{item.desc}</p>
-                                    </div>
-                                </motion.div>
-                ))}
-            </div>
-                        
-                        {/* Mobile: Vertical Stack */}
-                        <div className="md:hidden">
-                            {milestones.map((item, i) => (
-                                <motion.div 
-                                    key={item.date}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    whileInView={{ opacity: 1, x: 0 }}
-                                    transition={{ duration: 0.4, delay: i * 0.1 }}
-                                    viewport={{ once: true }}
-                                    className={`flex items-stretch ${i < milestones.length - 1 ? 'border-b border-black' : ''}`}
-                                >
-                                    {/* Left: Date + Diamond */}
-                                    <div className="w-24 flex-shrink-0 border-r border-black flex flex-col items-center justify-center py-5 relative">
-                                        <div className="border border-black px-2 py-1 font-mono text-[9px] uppercase tracking-wider mb-3">
-                                            {item.date}
-        </div>
-                                        <div className="w-3 h-3 bg-black rotate-45" />
-                                    </div>
-                                    
-                                    {/* Right: Content */}
-                                    <div className="flex-1 p-4">
-                                        <h3 className="text-lg font-serif mb-1">{item.title}</h3>
-                                        <p className="font-mono text-[10px] text-black/50 leading-relaxed">{item.desc}</p>
-                </div>
-                                </motion.div>
-            ))}
+                                ))}
+                            </div>
+                            
+                            <div className="mt-6 pt-4 border-t border-black/10 font-mono text-xs text-black/40">
+                                + Additional angels and strategic partners
+                            </div>
                         </div>
                     </div>
                 </motion.div>
-        </div>
-    </SlideContainer>
-);
+            </div>
+        </SlideContainer>
+    );
 };
 
 // ============================================================================
@@ -859,13 +932,39 @@ const RoadmapSlide = () => {
 
 const TeamSlide = () => {
     const team = [
-        { name: "Benjamin", role: "Founder & CEO", superpower: "Product visionary. Built and scaled multiple fintech products.", prev: "Product & Tech Background" },
-        { name: "Ben Lilly", role: "Co-Founder", superpower: "DeFi strategist. Designed yield strategies managing $100M+.", prev: "Jarvis Labs, Economist" },
-        { name: "Amit Trehan", role: "CTO", superpower: "Security-first engineer. Built trading systems at scale.", prev: "Ex-VP Lloyd's Bank" }
+        { 
+            name: "Benjamin", 
+            role: "Founder & CEO", 
+            bio: "Product visionary. Built and scaled multiple fintech products.",
+            prev: "Serial Entrepreneur",
+            twitter: "#",
+            linkedin: "#"
+        },
+        { 
+            name: "Amit Trehan", 
+            role: "CTO", 
+            bio: "Security-first engineer. Built trading systems at scale.",
+            prev: "Ex-VP Lloyd's Bank",
+            twitter: "#",
+            linkedin: "#"
+        },
+        { 
+            name: "Deb", 
+            role: "COO", 
+            bio: "Operations expert. Scaling teams and processes.",
+            prev: "Operations Background",
+            twitter: "#",
+            linkedin: "#"
+        }
+    ];
+
+    const advisors = [
+        { name: "Chirdeep", role: "Advisor", expertise: "Strategic Advisor" },
+        { name: "Shawn", role: "Advisor", expertise: "Industry Expert" },
     ];
 
     return (
-    <SlideContainer>
+        <SlideContainer>
             <div className="w-full max-w-5xl">
                 <motion.div
                     initial={{ opacity: 0 }}
@@ -878,36 +977,62 @@ const TeamSlide = () => {
                     <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-2 md:mb-3">
                         Builders from <span className="text-accent italic">DeFi & TradFi</span>
                     </h2>
-                    <p className="text-sm md:text-lg font-mono text-black/40 mb-8 md:mb-12">The only team capable of bridging both worlds.</p>
+                    <p className="text-sm md:text-lg font-mono text-black/40 mb-8 md:mb-12">10+ team members bridging both worlds.</p>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-0">
+                    {/* Core Team */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-0 mb-8">
                         {team.map((member, i) => (
                             <div 
                                 key={member.name} 
                                 className={`
-                                    bg-white p-4 md:p-8 
+                                    bg-white p-5 md:p-8 
                                     border-2 border-black md:border md:border-black
                                     ${i > 0 ? 'md:border-l-0' : ''}
                                     hover:bg-bone transition-colors group
-                                    flex md:block items-start gap-4
                                 `}
                             >
-                                <div className="w-12 h-12 md:w-14 md:h-14 bg-black/5 flex-shrink-0 md:mb-4 flex items-center justify-center group-hover:bg-accent/10 transition-colors">
-                                    <User className="w-6 h-6 md:w-7 md:h-7 text-black/20 group-hover:text-accent/50 transition-colors" />
+                                <div className="w-14 h-14 bg-black/5 mb-4 flex items-center justify-center group-hover:bg-accent/10 transition-colors">
+                                    <User className="w-7 h-7 text-black/20 group-hover:text-accent/50 transition-colors" />
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                    <div className="font-serif text-lg md:text-xl mb-0.5">{member.name}</div>
-                                    <div className="font-mono text-[10px] md:text-[11px] uppercase tracking-widest text-accent mb-2 md:mb-3">{member.role}</div>
-                                    <p className="font-mono text-xs md:text-sm text-black/60 leading-relaxed mb-2 md:mb-3">{member.superpower}</p>
-                                    <div className="font-mono text-[9px] md:text-[10px] uppercase tracking-widest text-black/30">{member.prev}</div>
+                                <div className="font-serif text-xl mb-0.5">{member.name}</div>
+                                <div className="font-mono text-[10px] uppercase tracking-widest text-accent mb-3">{member.role}</div>
+                                <p className="font-mono text-xs text-black/60 leading-relaxed mb-3">{member.bio}</p>
+                                <div className="font-mono text-[9px] uppercase tracking-widest text-black/30 mb-3">{member.prev}</div>
+                                
+                                {/* Social Links */}
+                                <div className="flex gap-2">
+                                    <a href={member.twitter} className="p-2 border border-black/20 hover:bg-black hover:text-white transition-colors">
+                                        <Twitter className="w-3.5 h-3.5" />
+                                    </a>
+                                    <a href={member.linkedin} className="p-2 border border-black/20 hover:bg-black hover:text-white transition-colors">
+                                        <Linkedin className="w-3.5 h-3.5" />
+                                    </a>
                                 </div>
+                            </div>
+                        ))}
                     </div>
-                ))}
-             </div>
+                    
+                    {/* Advisors */}
+                    <div className="border-2 border-black bg-white p-5 md:p-6">
+                        <h3 className="font-mono text-xs uppercase tracking-widest text-black/50 mb-4">Advisors</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            {advisors.map((advisor) => (
+                                <div key={advisor.name} className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-accent/10 flex items-center justify-center">
+                                        <User className="w-5 h-5 text-accent/50" />
+                                    </div>
+                                    <div>
+                                        <div className="font-mono text-sm font-bold">{advisor.name}</div>
+                                        <div className="font-mono text-[10px] text-black/40">{advisor.expertise}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </motion.div>
-        </div>
-    </SlideContainer>
-);
+            </div>
+        </SlideContainer>
+    );
 };
 
 // ============================================================================
@@ -915,7 +1040,7 @@ const TeamSlide = () => {
 // ============================================================================
 
 const AskSlide = () => {
-    const milestones = ["DUSD Mainnet", "$100M TVL", "Enterprise"];
+    const milestones = ["dUSD Mainnet", "$100M TVL", "Enterprise"];
 
     return (
         <SlideContainer dark>
@@ -983,10 +1108,6 @@ const AskSlide = () => {
     </SlideContainer>
 );
 };
-
-// ============================================================================
-// MAIN APPLICATION
-// ============================================================================
 
 // ============================================================================
 // BOTTOM SLIDE NAVIGATION
@@ -1239,7 +1360,7 @@ export default function DeployPitchDeck() {
         };
     }, [handleScroll, isIndexOpen]);
 
-    const slideComponents = [TitleSlide, ConflictSlide, PhilosophySlide, SolutionSlide, ProductSlide, TractionSlide, MoatSlide, RoadmapSlide, TeamSlide, AskSlide];
+    const slideComponents = [TitleSlide, MarketSlide, ProblemSlide, SolutionSlide, BetaSlide, MechanicsSlide, PartnersSlide, TokenomicsSlide, TeamSlide, AskSlide];
     const CurrentSlideComponent = slideComponents[currentSlide];
     const isDarkSlide = DARK_SLIDES.includes(currentSlide);
 
