@@ -8,7 +8,7 @@ import Navbar from './components/Navbar';
 // CONSTANTS & CONFIG
 // ============================================================================
 
-const SLIDES = ['Title', 'Market', 'Problem', 'Solution', 'Beta', 'Mechanics', 'Partners', 'Tokenomics', 'Team', 'Ask'];
+const SLIDES = ['Title', 'Market Opportunity', 'The Problem', 'The Solution', 'Deploy In Action', 'How dUSD Works', 'Commitments & Partnerships', 'Tokenomics', 'The Team', 'Connect'];
 const DARK_SLIDES = [2, 4, 9]; // Problem, Beta, Ask
 
 const STRATEGIES_API = 'https://do510emoi4o2y.cloudfront.net/api/available-strategies';
@@ -1109,21 +1109,24 @@ const TeamSlide = () => {
             role: "Founder & CEO", 
             bio: "Product visionary. Built and scaled multiple fintech products.",
             prev: "Serial Entrepreneur",
-            twitter: "https://x.com/TheWhale_hunter"
+            twitter: "https://x.com/TheWhale_hunter",
+            image: "https://pbs.twimg.com/profile_images/1947936283579305984/_NFcr8_s_400x400.jpg"
         },
         { 
             name: "Amit Trehan", 
             role: "CTO", 
             bio: "Security-first engineer. Built trading systems at scale.",
             prev: "Ex-VP Lloyd's Bank",
-            twitter: "https://x.com/rangesnipe"
+            twitter: "https://x.com/rangesnipe",
+            image: "https://pbs.twimg.com/profile_images/1927061332194430976/XrXvfC3Y_400x400.jpg"
         },
         { 
             name: "Deb", 
             role: "COO", 
             bio: "Operations expert. Scaling teams and processes.",
             prev: "Operations Background",
-            twitter: "https://x.com/WhatIsDeb"
+            twitter: "https://x.com/WhatIsDeb",
+            image: "https://pbs.twimg.com/profile_images/1801951800519712768/biGB5nG1_400x400.jpg"
         }
     ];
 
@@ -1168,9 +1171,15 @@ const TeamSlide = () => {
                                     hover:bg-bone transition-colors group
                                 `}
                             >
-                                <div className="w-14 h-14 bg-black/5 mb-4 flex items-center justify-center group-hover:bg-accent/10 transition-colors">
-                                    <User className="w-7 h-7 text-black/20 group-hover:text-accent/50 transition-colors" />
-                                </div>
+                                {member.image ? (
+                                    <div className="w-14 h-14 mb-4 overflow-hidden">
+                                        <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                                    </div>
+                                ) : (
+                                    <div className="w-14 h-14 bg-black/5 mb-4 flex items-center justify-center group-hover:bg-accent/10 transition-colors">
+                                        <User className="w-7 h-7 text-black/20 group-hover:text-accent/50 transition-colors" />
+                                    </div>
+                                )}
                                 <div className="font-serif text-xl mb-0.5">{member.name}</div>
                                 <div className="font-mono text-[10px] uppercase tracking-widest text-accent mb-3">{member.role}</div>
                                 <p className="font-mono text-xs text-black/60 leading-relaxed mb-3">{member.bio}</p>
