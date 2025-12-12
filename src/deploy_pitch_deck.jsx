@@ -1034,11 +1034,11 @@ const PartnersSlide = () => {
 const TokenomicsSlide = () => {
     const allocation = [
         { label: "Ecosystem", percent: 35, color: "bg-accent", desc: "Rewards, incentives & growth" },
-        { label: "Investors", percent: 25, color: "bg-black", desc: "Strategic backers & VCs" },
-        { label: "Treasury", percent: 20, color: "bg-black/60", desc: "Protocol development & ops" },
-        { label: "Team", percent: 10, color: "bg-accent/60", desc: "4-year vesting schedule" },
-        { label: "Advisors", percent: 5, color: "bg-black/40", desc: "Strategic guidance" },
-        { label: "Liquidity", percent: 5, color: "bg-accent/30", desc: "DEX & CEX liquidity" },
+        { label: "Investors", percent: 25, color: "bg-gray-700", desc: "Strategic backers & VCs" },
+        { label: "Treasury", percent: 20, color: "bg-gray-500", desc: "Protocol development & ops" },
+        { label: "Team", percent: 10, color: "bg-gray-400", desc: "4-year vesting schedule" },
+        { label: "Advisors", percent: 5, color: "bg-gray-300", desc: "Strategic guidance" },
+        { label: "Liquidity", percent: 5, color: "bg-gray-200", desc: "DEX & CEX liquidity" },
     ];
 
     return (
