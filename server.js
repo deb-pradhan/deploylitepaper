@@ -207,7 +207,7 @@ Deploy is infrastructure for the entire ecosystem. Any protocol, custodian, fint
 4. **Enterprise:** Private DUSD deployments on Canton Network
 
 ### The Flywheel:
-"The more capital that flows through the engine, the better the execution becomes, the higher the yield, the faster the flywheel spins."
+"One engine, infinite storefronts. Deploy's infrastructure lets partners capture yield economics without rebuilding the stack."
 
 ---
 

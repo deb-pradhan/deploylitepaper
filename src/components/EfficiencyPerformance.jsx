@@ -8,7 +8,7 @@ const EfficiencyPerformance = () => {
                 Deploy is not merely a consumer application. It is infrastructure for the entire ecosystem.
             </p>
             <p className="mb-8">
-                Any protocol, custodian, fintech, or Layer-1 can integrate Deploy’s execution engine and offer “Deploy-powered yield” under their own brand. White-label high-yield savings accounts, D-Asset collateral acceptance in lending markets, private DUSD deployments on enterprise networks. All are live possibilities today.
+                Any protocol, custodian, fintech, or Layer-1 can integrate Deploy’s execution engine and offer “Deploy-powered yield” under their own brand. White-label high-yield savings accounts, dUSD collateral acceptance in lending markets, private DUSD deployments on enterprise networks. All are live possibilities today.
             </p>
 
             <div className="mb-12">
@@ -53,7 +53,7 @@ const EfficiencyPerformance = () => {
                 </div>
 
                 <p className="text-lg font-serif italic mt-8 text-center md:text-left">
-                    "The more capital that flows through the engine, the better the execution becomes, the higher the yield, the faster the flywheel spins."
+                    "One engine, infinite storefronts. Deploy's infrastructure lets partners capture yield economics without rebuilding the stack."
                 </p>
             </div>
         </Section>

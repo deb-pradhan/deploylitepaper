@@ -52,7 +52,7 @@ const Hero = () => {
                     dUSD is the yield-bearing stablecoin at the core of Deploy. Deposit stablecoins, receive dUSD, and let delta-neutral strategies work for you—automatically. No lockups, no token emissions, no complexity. Just real yield from genuine market demand.
                 </p>
                 <p className="text-paper-text leading-relaxed max-w-3xl">
-                    This is not speculation. Our private beta hit $15M TVL in 2 weeks with no marketing, generated $1.6M in yield, and attracted 2,000+ wallets—all with zero incidents. $80M+ in TVL is already committed for public launch.
+                    This is not speculation. Our private beta hit $15M TVL in 2 weeks with no marketing, generated $1.6M in yield over 6 months, and attracted 2,000+ wallets—all with zero incidents. $80M+ in TVL is already committed for public launch.
                 </p>
 
                 <div className="mt-8 font-serif italic text-lg text-paper-accent">

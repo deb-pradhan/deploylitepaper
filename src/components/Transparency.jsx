@@ -5,7 +5,7 @@ const Transparency = () => {
     return (
         <Section id="transparency" subtitle="7. Transparency" title="Transparency Engineered, Not Marketed">
             <p className="mb-8">
-                Institutions and high net worth individuals do not trust marketing. They trust verifiable data. That is why transparency is not a future roadmap item—it is live today.
+                Institutions and high net worth individuals do not trust marketing. They trust verifiable data. That is why transparency is a core architectural principle—not an afterthought.
             </p>
 
             <div className="space-y-6 mb-12">

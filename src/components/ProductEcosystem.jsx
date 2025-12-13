@@ -3,29 +3,9 @@ import Section from './Section';
 
 const ProductEcosystem = () => {
     return (
-        <Section id="product" subtitle="4. The Product Stack" title="D-Assets and DUSD">
+        <Section id="product" subtitle="4. The Product" title="dUSD">
             <div className="mb-12">
-                <h3 className="text-xl font-bold mb-4">4.1 D-Assets: The New High-Quality Collateral Standard</h3>
-                <p className="mb-6">
-                    A D-Asset is the tokenized representation of a user’s original deposit plus all funding-rate yield accrued over time. It is always delta-neutral, always backed one-for-one by the underlying BTC, ETH, USDC, or other supported asset, and always fully redeemable.
-                </p>
-                <p className="mb-6">
-                    D-Assets are designed from first principles to satisfy the three criteria that actually matter for high-quality collateral in a mature financial system:
-                </p>
-
-                <ul className="list-disc pl-6 space-y-2 mb-8 marker:text-paper-muted">
-                    <li><strong>Deep Liquidity:</strong> Minimal slippage even at institutional size.</li>
-                    <li><strong>Lindy Properties:</strong> Social consensus that has already survived multiple cycles.</li>
-                    <li><strong>Extensive Tooling:</strong> Integration across lending, borrowing, and derivatives markets.</li>
-                </ul>
-
-                <p className="mb-12">
-                    Because D-Assets inherit these properties from their underlying and add continuous yield on top, they are strictly superior to idle versions of the same assets. Over time, rational markets will demand D-Assets everywhere that raw BTC or ETH is accepted today.
-                </p>
-            </div>
-
-            <div className="mb-12">
-                <h3 className="text-xl font-bold mb-4">4.2 dUSD: The Yield-Bearing Stablecoin That Finally Makes Sense</h3>
+                <h3 className="text-xl font-bold mb-4">4.1 dUSD: The Yield-Bearing Stablecoin That Finally Makes Sense</h3>
                 <p className="mb-6">
                     dUSD is the core product of Deploy Finance. It is a fully collateralized, self-custodial, yield-bearing dollar token that unlocks delta-neutral yields on perpetual DEXes—automatically.
                 </p>

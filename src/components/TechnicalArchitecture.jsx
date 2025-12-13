@@ -12,9 +12,9 @@ const TechnicalArchitecture = () => {
             </p>
 
             <div className="mb-12">
-                <h3 className="text-xl font-bold mb-6">Battle-Tested Since 2020</h3>
+                <h3 className="text-xl font-bold mb-6">Strategy Refined Since 2020, Now Live</h3>
                 <p className="mb-6">
-                    The system has been live and battle-tested since the 2020–2021 cycle. As of November 2025:
+                    The underlying strategy has been internally tested and refined since the 2020–2021 cycle. In early 2025, we launched the public pilot. Here's what the pilot has achieved in 6 months:
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -24,7 +24,7 @@ const TechnicalArchitecture = () => {
                     </div>
                     <div className="p-6 bg-paper-bg border border-paper-border rounded">
                         <div className="text-3xl font-serif font-bold mb-2">$1.6M</div>
-                        <div className="text-sm text-paper-muted uppercase tracking-wider">Yield Generated</div>
+                        <div className="text-sm text-paper-muted uppercase tracking-wider">Yield Distributed (6 months)</div>
                     </div>
                     <div className="p-6 bg-paper-bg border border-paper-border rounded">
                         <div className="text-3xl font-serif font-bold mb-2">2,000+</div>
