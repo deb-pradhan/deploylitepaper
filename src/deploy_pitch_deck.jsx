@@ -1098,7 +1098,7 @@ const TeamSlide = () => {
             name: "Benjamin",
             role: "Co-founder & CEO",
             bio: "Product visionary. Built and scaled multiple fintech products.",
-            prev: "Serial Entrepreneur",
+            prev: "Ex-ASML",
             twitter: "https://x.com/TheWhale_hunter",
             image: "https://pbs.twimg.com/profile_images/1947936283579305984/_NFcr8_s_400x400.jpg"
         },
@@ -1114,7 +1114,7 @@ const TeamSlide = () => {
             name: "Ben Lilly",
             role: "DeFi Strategist",
             bio: "On-chain analyst and DeFi strategy expert.",
-            prev: "Jarvis Labs",
+            prev: "Analyst, Jlabs Digital",
             twitter: "https://x.com/MrBenLilly",
             image: "https://unavatar.io/twitter/MrBenLilly"
         },
