@@ -1095,20 +1095,28 @@ const TokenomicsSlide = () => {
 const TeamSlide = () => {
     const team = [
         { 
-            name: "Benjamin", 
-            role: "Founder & CEO", 
+            name: "Benjamin",
+            role: "Co-founder & CEO",
             bio: "Product visionary. Built and scaled multiple fintech products.",
             prev: "Serial Entrepreneur",
             twitter: "https://x.com/TheWhale_hunter",
             image: "https://pbs.twimg.com/profile_images/1947936283579305984/_NFcr8_s_400x400.jpg"
         },
         { 
-            name: "Amit Trehan", 
-            role: "CTO", 
+            name: "Amit Trehan",
+            role: "Co-founder & CTO",
             bio: "Security-first engineer. Built trading systems at scale.",
             prev: "Ex-VP Lloyd's Bank",
             twitter: "https://x.com/rangesnipe",
             image: "https://pbs.twimg.com/profile_images/1927061332194430976/XrXvfC3Y_400x400.jpg"
+        },
+        { 
+            name: "Ben Lilly",
+            role: "DeFi Strategist",
+            bio: "On-chain analyst and DeFi strategy expert.",
+            prev: "Jarvis Labs",
+            twitter: "https://x.com/MrBenLilly",
+            image: "https://pbs.twimg.com/profile_images/1584892529718697985/bHR6CPIN_400x400.jpg"
         },
         { 
             name: "Deb", 
