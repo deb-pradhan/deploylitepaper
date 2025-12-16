@@ -913,68 +913,6 @@ const MechanicsSlide = () => {
                     <p className="text-sm md:text-lg font-mono text-black/50 mb-8 md:mb-10 max-w-2xl">
                         Deposit stablecoins, receive dUSD, and let our strategies work for you.
                     </p>
-                    
-                    {/* Flow Diagram */}
-                    <div className="border-2 border-black bg-white p-5 md:p-8 mb-6">
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-2">
-                            {/* User */}
-                            <div className="flex flex-col items-center text-center">
-                                <div className="w-16 h-16 md:w-20 md:h-20 border-2 border-black bg-bone flex items-center justify-center mb-2">
-                                    <Wallet className="w-8 h-8 md:w-10 md:h-10" />
-                                </div>
-                                <span className="font-mono text-xs uppercase tracking-wide">You</span>
-                                <span className="font-mono text-[10px] text-black/40">USDC</span>
-                            </div>
-                            
-                            {/* Arrow */}
-                            <div className="flex flex-col items-center">
-                                <ArrowRight className="w-6 h-6 text-accent hidden md:block" />
-                                <ArrowDown className="w-6 h-6 text-accent md:hidden" />
-                                <span className="font-mono text-[9px] text-black/40 mt-1">deposit</span>
-                            </div>
-                            
-                            {/* Vault */}
-                            <div className="flex flex-col items-center text-center">
-                                <div className="w-16 h-16 md:w-20 md:h-20 border-2 border-accent bg-accent/10 flex items-center justify-center mb-2">
-                                    <Shield className="w-8 h-8 md:w-10 md:h-10 text-accent" />
-                                </div>
-                                <span className="font-mono text-xs uppercase tracking-wide">Deploy Vault</span>
-                                <span className="font-mono text-[10px] text-black/40">Mint dUSD</span>
-                            </div>
-                            
-                            {/* Arrow */}
-                            <div className="flex flex-col items-center">
-                                <ArrowRight className="w-6 h-6 text-accent hidden md:block" />
-                                <ArrowDown className="w-6 h-6 text-accent md:hidden" />
-                                <span className="font-mono text-[9px] text-black/40 mt-1">execute</span>
-                            </div>
-                            
-                            {/* Strategy */}
-                            <div className="flex flex-col items-center text-center">
-                                <div className="w-16 h-16 md:w-20 md:h-20 border-2 border-black bg-black flex items-center justify-center mb-2">
-                                    <TrendingUp className="w-8 h-8 md:w-10 md:h-10 text-white" />
-                                </div>
-                                <span className="font-mono text-xs uppercase tracking-wide">Hyperliquid</span>
-                                <span className="font-mono text-[10px] text-black/40">Delta-Neutral</span>
-                            </div>
-                            
-                            {/* Arrow */}
-                            <div className="flex flex-col items-center">
-                                <ArrowRight className="w-6 h-6 text-accent hidden md:block" />
-                                <ArrowDown className="w-6 h-6 text-accent md:hidden" />
-                                <span className="font-mono text-[9px] text-black/40 mt-1">yield</span>
-                            </div>
-                            
-                            {/* Returns */}
-                            <div className="flex flex-col items-center text-center">
-                                <div className="w-16 h-16 md:w-20 md:h-20 border-2 border-accent bg-accent flex items-center justify-center mb-2">
-                                    <span className="font-serif text-xl md:text-2xl text-white font-bold">%</span>
-                                </div>
-                                <span className="font-mono text-xs uppercase tracking-wide text-accent">15-25% APY</span>
-                                <span className="font-mono text-[10px] text-black/40">Your Returns</span>
-                            </div>
-                        </div>
-                    </div>
 
                     {/* Steps */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-0 mb-6">
