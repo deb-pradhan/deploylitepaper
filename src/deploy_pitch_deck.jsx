@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, createContext, useContext, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, TrendingUp, ArrowRight, Activity, Layers, Landmark, Code, Zap, User, Check, X, ChevronLeft, ChevronRight, List, ExternalLink, Twitter, DollarSign, Users, Wallet, Building2, Handshake, PieChart, ArrowDownUp } from 'lucide-react';
+import { Shield, TrendingUp, ArrowRight, ArrowDown, Activity, Layers, Landmark, Code, Zap, User, Check, X, ChevronLeft, ChevronRight, List, ExternalLink, Twitter, DollarSign, Users, Wallet, Building2, Handshake, PieChart, ArrowDownUp, Clock } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, ReferenceLine } from 'recharts';
 import Navbar from './components/Navbar';
 
@@ -890,6 +890,12 @@ const MechanicsSlide = () => {
         { step: "03", title: "Earn Yields", desc: "Yield accrues in real-time from funding rate arbitrage on Hyperliquid.", icon: TrendingUp }
     ];
 
+    const features = [
+        { label: "Self-Custodial", value: "Your keys, your funds", icon: Shield },
+        { label: "No Lock-ups", value: "Withdraw anytime", icon: Clock },
+        { label: "Real-time Yield", value: "Accrues every block", icon: Zap },
+    ];
+
     return (
         <SlideContainer>
             <div className="w-full max-w-5xl">
@@ -904,17 +910,79 @@ const MechanicsSlide = () => {
                     <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-3">
                         Simple. <span className="text-accent italic">Powerful.</span> Transparent.
                     </h2>
-                    <p className="text-sm md:text-lg font-mono text-black/50 mb-8 md:mb-12 max-w-2xl">
+                    <p className="text-sm md:text-lg font-mono text-black/50 mb-8 md:mb-10 max-w-2xl">
                         Deposit stablecoins, receive dUSD, and let our strategies work for you.
                     </p>
                     
+                    {/* Flow Diagram */}
+                    <div className="border-2 border-black bg-white p-5 md:p-8 mb-6">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-2">
+                            {/* User */}
+                            <div className="flex flex-col items-center text-center">
+                                <div className="w-16 h-16 md:w-20 md:h-20 border-2 border-black bg-bone flex items-center justify-center mb-2">
+                                    <Wallet className="w-8 h-8 md:w-10 md:h-10" />
+                                </div>
+                                <span className="font-mono text-xs uppercase tracking-wide">You</span>
+                                <span className="font-mono text-[10px] text-black/40">USDC</span>
+                            </div>
+                            
+                            {/* Arrow */}
+                            <div className="flex flex-col items-center">
+                                <ArrowRight className="w-6 h-6 text-accent hidden md:block" />
+                                <ArrowDown className="w-6 h-6 text-accent md:hidden" />
+                                <span className="font-mono text-[9px] text-black/40 mt-1">deposit</span>
+                            </div>
+                            
+                            {/* Vault */}
+                            <div className="flex flex-col items-center text-center">
+                                <div className="w-16 h-16 md:w-20 md:h-20 border-2 border-accent bg-accent/10 flex items-center justify-center mb-2">
+                                    <Shield className="w-8 h-8 md:w-10 md:h-10 text-accent" />
+                                </div>
+                                <span className="font-mono text-xs uppercase tracking-wide">Deploy Vault</span>
+                                <span className="font-mono text-[10px] text-black/40">Mint dUSD</span>
+                            </div>
+                            
+                            {/* Arrow */}
+                            <div className="flex flex-col items-center">
+                                <ArrowRight className="w-6 h-6 text-accent hidden md:block" />
+                                <ArrowDown className="w-6 h-6 text-accent md:hidden" />
+                                <span className="font-mono text-[9px] text-black/40 mt-1">execute</span>
+                            </div>
+                            
+                            {/* Strategy */}
+                            <div className="flex flex-col items-center text-center">
+                                <div className="w-16 h-16 md:w-20 md:h-20 border-2 border-black bg-black flex items-center justify-center mb-2">
+                                    <TrendingUp className="w-8 h-8 md:w-10 md:h-10 text-white" />
+                                </div>
+                                <span className="font-mono text-xs uppercase tracking-wide">Hyperliquid</span>
+                                <span className="font-mono text-[10px] text-black/40">Delta-Neutral</span>
+                            </div>
+                            
+                            {/* Arrow */}
+                            <div className="flex flex-col items-center">
+                                <ArrowRight className="w-6 h-6 text-accent hidden md:block" />
+                                <ArrowDown className="w-6 h-6 text-accent md:hidden" />
+                                <span className="font-mono text-[9px] text-black/40 mt-1">yield</span>
+                            </div>
+                            
+                            {/* Returns */}
+                            <div className="flex flex-col items-center text-center">
+                                <div className="w-16 h-16 md:w-20 md:h-20 border-2 border-accent bg-accent flex items-center justify-center mb-2">
+                                    <span className="font-serif text-xl md:text-2xl text-white font-bold">%</span>
+                                </div>
+                                <span className="font-mono text-xs uppercase tracking-wide text-accent">15-25% APY</span>
+                                <span className="font-mono text-[10px] text-black/40">Your Returns</span>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Steps */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-0 mb-10">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-0 mb-6">
                         {steps.map((item, i) => (
                             <div 
                                 key={item.step} 
                                 className={`
-                                    p-5 md:p-8 
+                                    p-5 md:p-6 
                                     border-2 border-black md:border md:border-black
                                     ${i > 0 ? 'md:border-l-0' : ''}
                                     bg-white hover:bg-black hover:text-white 
@@ -922,9 +990,27 @@ const MechanicsSlide = () => {
                                 `}
                             >
                                 <div className="font-mono text-[10px] text-accent mb-3 tracking-wide">STEP {item.step}</div>
-                                <item.icon className="w-8 h-8 md:w-10 md:h-10 mb-4 stroke-[1.5] text-black group-hover:text-white transition-colors" />
-                                <h3 className="text-lg md:text-xl font-serif italic mb-2">{item.title}</h3>
-                                <p className="font-mono text-xs md:text-sm leading-relaxed text-black/60 group-hover:text-white/70 transition-colors">{item.desc}</p>
+                                <item.icon className="w-7 h-7 md:w-8 md:h-8 mb-3 stroke-[1.5] text-black group-hover:text-white transition-colors" />
+                                <h3 className="text-base md:text-lg font-serif italic mb-2">{item.title}</h3>
+                                <p className="font-mono text-xs leading-relaxed text-black/60 group-hover:text-white/70 transition-colors">{item.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Features */}
+                    <div className="grid grid-cols-3 gap-3 md:gap-0">
+                        {features.map((feat, i) => (
+                            <div 
+                                key={feat.label}
+                                className={`
+                                    p-4 md:p-5 border-2 border-black md:border md:border-black
+                                    ${i > 0 ? 'md:border-l-0' : ''}
+                                    bg-bone
+                                `}
+                            >
+                                <feat.icon className="w-5 h-5 text-accent mb-2" />
+                                <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/70">{feat.label}</div>
+                                <div className="font-mono text-[9px] md:text-[10px] text-black/40">{feat.value}</div>
                             </div>
                         ))}
                     </div>
@@ -1111,14 +1197,6 @@ const TeamSlide = () => {
             image: "https://pbs.twimg.com/profile_images/1927061332194430976/XrXvfC3Y_400x400.jpg"
         },
         { 
-            name: "Ben Lilly",
-            role: "DeFi Strategist",
-            bio: "On-chain analyst and DeFi strategy expert.",
-            prev: "Analyst, Jlabs Digital",
-            twitter: "https://x.com/MrBenLilly",
-            image: "https://unavatar.io/twitter/MrBenLilly"
-        },
-        { 
             name: "Deb", 
             role: "COO", 
             bio: "Operations expert. Scaling teams and processes.",
@@ -1157,7 +1235,7 @@ const TeamSlide = () => {
                     </h2>
                     
                     {/* Core Team */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-0 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-0 mb-8">
                         {team.map((member, i) => (
                             <div 
                                 key={member.name} 
