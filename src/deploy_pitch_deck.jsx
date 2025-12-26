@@ -1119,20 +1119,20 @@ const TokenomicsSlide = () => {
 const TeamSlide = () => {
     const team = [
         { 
-            name: "Benjamin",
-            role: "Co-founder & CEO",
-            bio: "Product visionary. Built and scaled multiple fintech products.",
-            prev: "Ex-ASML",
-            twitter: "https://x.com/TheWhale_hunter",
-            image: "https://pbs.twimg.com/profile_images/1947936283579305984/_NFcr8_s_400x400.jpg"
-        },
-        { 
             name: "Amit Trehan",
-            role: "Co-founder & CTO",
+            role: "Founder & CEO",
             bio: "Security-first engineer. Built trading systems at scale.",
             prev: "Ex-VP Lloyd's Bank",
             twitter: "https://x.com/rangesnipe",
             image: "https://pbs.twimg.com/profile_images/1927061332194430976/XrXvfC3Y_400x400.jpg"
+        },
+        { 
+            name: "Benjamin",
+            role: "DeFi Strategist",
+            bio: "Product visionary. Built and scaled multiple fintech products.",
+            prev: "Ex-ASML",
+            twitter: "https://x.com/TheWhale_hunter",
+            image: "https://pbs.twimg.com/profile_images/1947936283579305984/_NFcr8_s_400x400.jpg"
         },
         { 
             name: "Deb", 
