@@ -1119,7 +1119,7 @@ const TokenomicsSlide = () => {
 const TeamSlide = () => {
     const team = [
         { 
-            name: "Amit Trehan",
+            name: "Amit",
             role: "Founder & CEO",
             bio: "Security-first engineer. Built trading systems at scale.",
             prev: "Ex-VP Lloyd's Bank",
