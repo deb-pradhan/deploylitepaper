@@ -8,7 +8,7 @@ import Navbar from './components/Navbar';
 // CONSTANTS & CONFIG
 // ============================================================================
 
-const SLIDES = ['Title', 'Market Opportunity', 'The Problem', 'The Solution', 'Deploy In Action', 'How dUSD Works', 'Commitments & Partnerships', 'Tokenomics', 'The Team', 'Connect'];
+const SLIDES = ['Title', 'Market Opportunity', 'The Problem', 'The Solution', 'Deploy In Action', 'How dUSD Works', 'Commitments & Partnerships', 'Canton Partnership', 'The Team', 'Connect'];
 const DARK_SLIDES = [2, 4, 9]; // Problem, Beta, Ask
 
 const STRATEGIES_API = 'https://do510emoi4o2y.cloudfront.net/api/available-strategies';
@@ -1042,17 +1042,32 @@ const PartnersSlide = () => {
 };
 
 // ============================================================================
-// SLIDE 8: TOKENOMICS
+// SLIDE 8: CANTON NETWORK PARTNERSHIP
 // ============================================================================
 
-const TokenomicsSlide = () => {
-    const allocation = [
-        { label: "Ecosystem", percent: 35, color: "bg-accent", desc: "Rewards, incentives & growth" },
-        { label: "Investors", percent: 25, color: "bg-gray-700", desc: "Strategic backers & VCs" },
-        { label: "Treasury", percent: 20, color: "bg-gray-500", desc: "Protocol development & ops" },
-        { label: "Team", percent: 10, color: "bg-gray-400", desc: "4-year vesting schedule" },
-        { label: "Advisors", percent: 5, color: "bg-gray-300", desc: "Strategic guidance" },
-        { label: "Liquidity", percent: 5, color: "bg-gray-200", desc: "DEX & CEX liquidity" },
+const CantonSlide = () => {
+    const advantages = [
+        { 
+            title: "Privacy-First Infrastructure", 
+            desc: "Confidential execution layer keeps transaction data sealed while enabling atomic settlement",
+            icon: Shield
+        },
+        { 
+            title: "Institutional Compliance", 
+            desc: "Built for regulatory requirements — security and compliance without sacrificing performance",
+            icon: Building2
+        },
+        { 
+            title: "Real-Time Settlement", 
+            desc: "Cross-chain atomic transactions with institutional-grade confidentiality",
+            icon: Zap
+        },
+    ];
+
+    const partners = [
+        { name: "Bank of America" },
+        { name: "Citadel Securities" },
+        { name: "DTCC" },
     ];
 
     return (
@@ -1064,47 +1079,105 @@ const TokenomicsSlide = () => {
                     transition={{ duration: 0.6 }}
                     viewport={{ once: true }}
                 >
-                    <SectionTag>07 — Tokenomics</SectionTag>
+                    {/* New Strategy Badge */}
+                    <motion.div 
+                        className="inline-block px-3 py-1.5 bg-accent text-white font-mono text-[10px] uppercase tracking-widest mb-4"
+                        initial={{ opacity: 0, x: -10 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.4, delay: 0.2 }}
+                        viewport={{ once: true }}
+                    >
+                        New Strategy
+                    </motion.div>
+
+                    <SectionTag>07 — Strategic Partnership</SectionTag>
                     
                     <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-3">
-                        Designed for <span className="text-accent italic">sustainable growth</span>.
+                        Canton Network <span className="text-accent italic">Partnership</span>
                     </h2>
-                    <p className="text-sm md:text-lg font-mono text-black/50 mb-8 md:mb-12 max-w-2xl">
-                        Token distribution aligned with long-term protocol success.
+                    <p className="text-sm md:text-lg font-mono text-black/50 mb-8 md:mb-12 max-w-3xl">
+                        Connecting private financial rails with open execution layers for institutional-grade yield strategies.
                     </p>
                     
-                    {/* Token Allocation - Full Width */}
-                    <div className="border-2 border-black bg-white p-5 md:p-8">
-                        <h3 className="font-mono text-xs uppercase tracking-widest text-black/50 mb-6">Token Allocation</h3>
-                        
-                        {/* Visual Bar */}
-                        <div className="h-10 md:h-12 flex mb-8 border border-black overflow-hidden">
-                            {allocation.map((item) => (
-                                <div 
-                                    key={item.label}
-                                    className={`${item.color} h-full relative group`}
-                                    style={{ width: `${item.percent}%` }}
-                                >
-                                    <span className="absolute inset-0 flex items-center justify-center font-mono text-xs md:text-sm font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                                        {item.percent}%
-                                    </span>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 mb-8">
+                        {/* Main Value Prop */}
+                        <div className="lg:col-span-2 border-2 border-black bg-white p-5 md:p-8">
+                            <h3 className="font-mono text-xs uppercase tracking-widest text-black/50 mb-6">Why Canton Network</h3>
+                            
+                            <div className="space-y-6">
+                                <p className="text-sm md:text-base leading-relaxed">
+                                    Deploy integrates with Canton Network to access <strong>tokenized assets like dBTC</strong> and run delta-neutral strategies with real-time settlement — all while keeping execution data confidential.
+                                </p>
+                                
+                                <div className="p-4 bg-accent/5 border-l-4 border-accent">
+                                    <h4 className="font-mono text-xs uppercase tracking-widest text-accent mb-2">2026 Thesis: Privacy</h4>
+                                    <p className="text-sm text-black/70 leading-relaxed">
+                                        With Vitalik, Naval Ravikant, and industry leaders pushing privacy as the next frontier, Canton's confidentiality layer positions Deploy ahead of ZK alternatives — offering institutional compliance without sacrificing on-chain transparency.
+                                    </p>
                                 </div>
-                            ))}
+
+                                <p className="text-sm md:text-base leading-relaxed">
+                                    As AI dominates the space, privacy tech remains nascent. Canton's institutional-friendly confidentiality setup enables both security and regulatory compliance — a major opportunity for yield-bearing synthetic dollars.
+                                </p>
+                            </div>
                         </div>
-                        
-                        {/* Allocation Grid */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                            {allocation.map((item) => (
-                                <div key={item.label} className="p-4 border border-black/10 hover:border-black transition-colors">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <div className={`w-3 h-3 ${item.color}`} />
-                                        <span className="font-mono text-2xl md:text-3xl font-bold">{item.percent}%</span>
-                                    </div>
-                                    <div className="font-mono text-xs md:text-sm font-medium mb-1">{item.label}</div>
-                                    <div className="font-mono text-[10px] md:text-xs text-black/40">{item.desc}</div>
+
+                        {/* Stats & Partners */}
+                        <div className="flex flex-col gap-6">
+                            {/* Big Number */}
+                            <div className="border-2 border-black bg-white p-5 md:p-6 text-center">
+                                <div className="text-4xl md:text-5xl font-serif font-bold text-accent mb-2">
+                                    $135M
                                 </div>
-                            ))}
+                                <div className="font-mono text-[10px] uppercase tracking-widest text-black/40">
+                                    Institutional Backing
+                                </div>
+                            </div>
+
+                            {/* Partners */}
+                            <div className="border-2 border-black bg-white flex-1">
+                                <div className="p-3 border-b border-black bg-black/5">
+                                    <h3 className="font-mono text-[10px] uppercase tracking-widest text-center">Canton Partners</h3>
+                                </div>
+                                <div className="divide-y divide-black/10">
+                                    {partners.map((partner) => (
+                                        <div 
+                                            key={partner.name} 
+                                            className="p-3 md:p-4 text-center hover:bg-bone transition-colors"
+                                        >
+                                            <span className="font-mono text-xs md:text-sm font-medium">
+                                                {partner.name}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
+                    </div>
+
+                    {/* Advantages Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {advantages.map((item, index) => (
+                            <motion.div 
+                                key={item.title}
+                                className="border-2 border-black bg-white p-4 md:p-5 hover:bg-bone transition-colors group"
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.4, delay: 0.1 * index }}
+                                viewport={{ once: true }}
+                            >
+                                <item.icon className="w-6 h-6 text-accent mb-3" />
+                                <h4 className="font-mono text-sm font-bold mb-2">{item.title}</h4>
+                                <p className="font-mono text-xs text-black/50 leading-relaxed">{item.desc}</p>
+                            </motion.div>
+                        ))}
+                    </div>
+
+                    {/* Footer note */}
+                    <div className="mt-6 text-center">
+                        <p className="font-mono text-xs text-black/30">
+                            Preferred over Zama & ZK models for institutional compliance and scalability
+                        </p>
                     </div>
                 </motion.div>
             </div>
@@ -1146,7 +1219,6 @@ const TeamSlide = () => {
 
     const advisors = [
         { name: "Ben Lilly", role: "Advisor", expertise: "DeFi Strategist" },
-        { name: "Michael", role: "Advisor", expertise: "Co-Founder & CEO, Rule72" },
         { name: "Chirdeep", role: "Advisor", expertise: "Strategic Advisor" },
         { name: "Shawn", role: "Angel", expertise: "Ex-JPMorgan" },
     ];
@@ -1651,7 +1723,7 @@ function DeployPitchDeckInner() {
         };
     }, [changeSlide, isIndexOpen, isScrolling]);
 
-    const slideComponents = [TitleSlide, MarketSlide, ProblemSlide, SolutionSlide, BetaSlide, MechanicsSlide, PartnersSlide, TokenomicsSlide, TeamSlide, AskSlide];
+    const slideComponents = [TitleSlide, MarketSlide, ProblemSlide, SolutionSlide, BetaSlide, MechanicsSlide, PartnersSlide, CantonSlide, TeamSlide, AskSlide];
     const CurrentSlideComponent = slideComponents[currentSlide];
     const isDarkSlide = DARK_SLIDES.includes(currentSlide);
 
