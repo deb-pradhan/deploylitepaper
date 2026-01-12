@@ -1382,7 +1382,7 @@ const AskSlide = () => {
                     {/* CTAs */}
                     <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6 md:mb-8">
                         <a 
-                            href="http://litepaper.deploy.finance/" 
+                            href="https://litepaper.deploy.finance/" 
                             target="_blank" 
                             rel="noopener noreferrer" 
                             className="inline-flex items-center justify-center gap-2 md:gap-3 bg-accent text-white px-6 md:px-10 py-4 md:py-5 font-mono text-sm md:text-base font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors border-2 border-accent hover:border-white w-full sm:w-auto"

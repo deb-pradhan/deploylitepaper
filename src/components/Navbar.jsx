@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, MessageSquare } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const navItems = [
@@ -8,7 +8,7 @@ const navItems = [
     { path: '/pitch', label: 'Pitch Deck' },
 ];
 
-const Navbar = ({ dark = false, onOpenChat, onToggleSidebar, showSidebarToggle = false }) => {
+const Navbar = ({ dark = false, onToggleSidebar, showSidebarToggle = false }) => {
     const location = useLocation();
     const currentPath = location.pathname;
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -83,23 +83,6 @@ const Navbar = ({ dark = false, onOpenChat, onToggleSidebar, showSidebarToggle =
                     >
                         <Menu size={18} />
                     </button>
-
-                    {/* Ask AI Button */}
-                    {onOpenChat && (
-                        <button
-                            onClick={onOpenChat}
-                            className={`
-                                hidden sm:flex items-center gap-2 px-4 py-2 border font-mono text-[10px] uppercase tracking-widest transition-colors
-                                ${dark 
-                                    ? 'border-white/20 hover:bg-white hover:text-black' 
-                                    : 'border-black hover:bg-black hover:text-white'
-                                }
-                            `}
-                        >
-                            <MessageSquare className="w-4 h-4" />
-                            <span>Ask AI</span>
-                        </button>
-                    )}
 
                     <a 
                         href="https://app.deploy.finance/dashboard?ref=MBRY6BF8" 
