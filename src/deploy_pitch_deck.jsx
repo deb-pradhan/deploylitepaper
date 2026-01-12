@@ -1072,8 +1072,10 @@ const CantonSlide = () => {
     const stats = [
         { value: "$100B+", label: "Daily Repos" },
         { value: "Trillions", label: "in RWAs" },
-        { value: "Live", label: "Securities Flows" },
+        { value: "$135M", label: "Institutional Backing" },
     ];
+
+    const partners = ["Bank of America", "Citadel Securities", "DTCC"];
 
     return (
         <SlideContainer>
@@ -1092,26 +1094,6 @@ const CantonSlide = () => {
                     <p className="text-sm md:text-lg font-mono text-black/50 mb-8 md:mb-10 max-w-3xl">
                         The Privacy-Native Settlement Layer for Institutional dUSD
                     </p>
-
-                    {/* Stats Row */}
-                    <div className="grid grid-cols-3 gap-3 md:gap-0 mb-6 md:mb-8">
-                        {stats.map((stat, index) => (
-                            <motion.div 
-                                key={stat.label}
-                                className={`bg-white p-4 md:p-6 
-                                    border-2 border-black md:border md:border-black
-                                    ${index > 0 ? 'md:border-l-0' : ''}
-                                    hover:bg-bone transition-colors group`}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.4, delay: 0.1 * index }}
-                                viewport={{ once: true }}
-                            >
-                                <div className="font-serif text-2xl md:text-4xl font-bold text-accent mb-1">{stat.value}</div>
-                                <div className="font-mono text-[10px] md:text-xs uppercase tracking-widest text-black/40">{stat.label}</div>
-                            </motion.div>
-                        ))}
-                    </div>
                     
                     {/* Features Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 mb-6 md:mb-8">
@@ -1135,16 +1117,63 @@ const CantonSlide = () => {
                         ))}
                     </div>
 
+                    {/* Stats Row */}
+                    <div className="grid grid-cols-3 gap-3 md:gap-0 mb-4">
+                        {stats.map((stat, index) => (
+                            <motion.div 
+                                key={stat.label}
+                                className={`bg-white p-4 md:p-6 
+                                    border-2 border-black md:border md:border-black
+                                    ${index > 0 ? 'md:border-l-0' : ''}
+                                    hover:bg-bone transition-colors group`}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.4, delay: 0.1 * index }}
+                                viewport={{ once: true }}
+                            >
+                                <div className="font-serif text-2xl md:text-4xl font-bold text-accent mb-1">{stat.value}</div>
+                                <div className="font-mono text-[10px] md:text-xs uppercase tracking-widest text-black/40">{stat.label}</div>
+                            </motion.div>
+                        ))}
+                    </div>
+
+                    {/* Canton Partners */}
+                    <motion.div 
+                        className="border-2 border-black bg-white mb-6"
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: 0.4 }}
+                        viewport={{ once: true }}
+                    >
+                        <div className="p-3 border-b border-black bg-black/5">
+                            <h3 className="font-mono text-[10px] uppercase tracking-widest text-center">Canton Partners</h3>
+                        </div>
+                        <div className="grid grid-cols-3 divide-x divide-black/10">
+                            {partners.map((partner) => (
+                                <div 
+                                    key={partner} 
+                                    className="p-4 md:p-5 text-center hover:bg-bone transition-colors"
+                                >
+                                    <span className="font-serif text-sm md:text-base font-medium">
+                                        {partner}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </motion.div>
+
                     {/* Bottom Line - Quote Style */}
                     <motion.div 
-                        className="mt-2 pl-6 border-l-4 border-accent"
+                        className="pl-6 border-l-4 border-accent"
                         initial={{ opacity: 0, x: -10 }}
                         whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.5, delay: 0.4 }}
+                        transition={{ duration: 0.5, delay: 0.5 }}
                         viewport={{ once: true }}
                     >
                         <p className="font-serif text-lg md:text-xl lg:text-2xl italic text-black/80 leading-relaxed">
-                            "Public chains cannot host institutional money at scale — <span className="text-accent font-semibold not-italic">Canton was built specifically to do so.</span>"
+                            "Public chains cannot host institutional money at scale."
+                            <br />
+                            <span className="text-accent font-semibold not-italic">Canton was built specifically to do so.</span>
                         </p>
                     </motion.div>
                 </motion.div>
