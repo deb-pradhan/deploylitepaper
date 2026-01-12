@@ -32,7 +32,7 @@ const EfficiencyPerformance = () => {
                         <div className="flex flex-col items-center bg-white p-4 border border-paper-border rounded-lg shadow-sm w-full md:w-48 relative z-10">
                              <div className="w-10 h-10 bg-paper-accent text-white rounded-full flex items-center justify-center font-bold mb-3 text-lg">2</div>
                             <h4 className="font-bold text-center mb-2">Payment Providers</h4>
-                            <p className="text-xs text-center text-paper-muted">Cast Card & Fintechs</p>
+                            <p className="text-xs text-center text-paper-muted">Cash Card & Fintechs</p>
                         </div>
 
                         {/* Node 3 */}

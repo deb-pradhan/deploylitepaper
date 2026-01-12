@@ -202,7 +202,7 @@ Deploy is infrastructure for the entire ecosystem. Any protocol, custodian, fint
 
 ### Integration Pipeline:
 1. **Lending Platforms:** D-Asset collateral integration
-2. **Payment Providers:** Cast Card & Fintechs - white-label high-yield savings
+2. **Payment Providers:** Cash Card & Fintechs - white-label high-yield savings
 3. **Institutions:** SAS Terminals for institutional access
 4. **Enterprise:** Private DUSD deployments on Canton Network
 
