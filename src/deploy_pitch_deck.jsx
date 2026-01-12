@@ -1046,28 +1046,33 @@ const PartnersSlide = () => {
 // ============================================================================
 
 const CantonSlide = () => {
-    const advantages = [
+    const features = [
         { 
-            title: "Privacy-First Infrastructure", 
-            desc: "Confidential execution layer keeps transaction data sealed while enabling atomic settlement",
+            title: "Institution-grade privacy", 
+            desc: "Selective disclosure at sub-transaction level — only counterparties see what they need.",
             icon: Shield
         },
         { 
-            title: "Institutional Compliance", 
-            desc: "Built for regulatory requirements — security and compliance without sacrificing performance",
-            icon: Building2
+            title: "No mempool, no leakage", 
+            desc: "Eliminates front-running, strategy inference, and metadata correlation.",
+            icon: Activity
         },
         { 
-            title: "Real-Time Settlement", 
-            desc: "Cross-chain atomic transactions with institutional-grade confidentiality",
-            icon: Zap
+            title: "Legal settlement", 
+            desc: "Designed for DvP, repos, margining, and regulated instruments.",
+            icon: Landmark
+        },
+        { 
+            title: "Perfect for dUSD", 
+            desc: "Confidential yield-bearing dollar without exposing flows or positions.",
+            icon: DollarSign
         },
     ];
 
-    const partners = [
-        { name: "Bank of America" },
-        { name: "Citadel Securities" },
-        { name: "DTCC" },
+    const stats = [
+        { value: "$100B+", label: "Daily Repos" },
+        { value: "Trillions", label: "in RWAs" },
+        { value: "Live", label: "Securities Flows" },
     ];
 
     return (
@@ -1079,106 +1084,69 @@ const CantonSlide = () => {
                     transition={{ duration: 0.6 }}
                     viewport={{ once: true }}
                 >
-                    {/* New Strategy Badge */}
-                    <motion.div 
-                        className="inline-block px-3 py-1.5 bg-accent text-white font-mono text-[10px] uppercase tracking-widest mb-4"
-                        initial={{ opacity: 0, x: -10 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.4, delay: 0.2 }}
-                        viewport={{ once: true }}
-                    >
-                        New Strategy
-                    </motion.div>
-
                     <SectionTag>07 — Strategic Partnership</SectionTag>
                     
-                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-3">
-                        Canton Network <span className="text-accent italic">Partnership</span>
+                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif leading-tight mb-2">
+                        Why <span className="text-accent italic">Canton Network</span>
                     </h2>
-                    <p className="text-sm md:text-lg font-mono text-black/50 mb-8 md:mb-12 max-w-3xl">
-                        Connecting private financial rails with open execution layers for institutional-grade yield strategies.
+                    <p className="text-sm md:text-lg font-mono text-black/50 mb-8 md:mb-10 max-w-3xl">
+                        The Privacy-Native Settlement Layer for Institutional dUSD
                     </p>
-                    
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 mb-8">
-                        {/* Main Value Prop */}
-                        <div className="lg:col-span-2 border-2 border-black bg-white p-5 md:p-8">
-                            <h3 className="font-mono text-xs uppercase tracking-widest text-black/50 mb-6">Why Canton Network</h3>
-                            
-                            <div className="space-y-6">
-                                <p className="text-sm md:text-base leading-relaxed">
-                                    Deploy integrates with Canton Network to access <strong>tokenized assets like dBTC</strong> and run delta-neutral strategies with real-time settlement — all while keeping execution data confidential.
-                                </p>
-                                
-                                <div className="p-4 bg-accent/5 border-l-4 border-accent">
-                                    <h4 className="font-mono text-xs uppercase tracking-widest text-accent mb-2">2026 Thesis: Privacy</h4>
-                                    <p className="text-sm text-black/70 leading-relaxed">
-                                        With Vitalik, Naval Ravikant, and industry leaders pushing privacy as the next frontier, Canton's confidentiality layer positions Deploy ahead of ZK alternatives — offering institutional compliance without sacrificing on-chain transparency.
-                                    </p>
-                                </div>
 
-                                <p className="text-sm md:text-base leading-relaxed">
-                                    As AI dominates the space, privacy tech remains nascent. Canton's institutional-friendly confidentiality setup enables both security and regulatory compliance — a major opportunity for yield-bearing synthetic dollars.
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Stats & Partners */}
-                        <div className="flex flex-col gap-6">
-                            {/* Big Number */}
-                            <div className="border-2 border-black bg-white p-5 md:p-6 text-center">
-                                <div className="text-4xl md:text-5xl font-serif font-bold text-accent mb-2">
-                                    $135M
-                                </div>
-                                <div className="font-mono text-[10px] uppercase tracking-widest text-black/40">
-                                    Institutional Backing
-                                </div>
-                            </div>
-
-                            {/* Partners */}
-                            <div className="border-2 border-black bg-white flex-1">
-                                <div className="p-3 border-b border-black bg-black/5">
-                                    <h3 className="font-mono text-[10px] uppercase tracking-widest text-center">Canton Partners</h3>
-                                </div>
-                                <div className="divide-y divide-black/10">
-                                    {partners.map((partner) => (
-                                        <div 
-                                            key={partner.name} 
-                                            className="p-3 md:p-4 text-center hover:bg-bone transition-colors"
-                                        >
-                                            <span className="font-mono text-xs md:text-sm font-medium">
-                                                {partner.name}
-                                            </span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Advantages Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {advantages.map((item, index) => (
+                    {/* Stats Row */}
+                    <div className="grid grid-cols-3 gap-3 md:gap-0 mb-6 md:mb-8">
+                        {stats.map((stat, index) => (
                             <motion.div 
-                                key={item.title}
-                                className="border-2 border-black bg-white p-4 md:p-5 hover:bg-bone transition-colors group"
+                                key={stat.label}
+                                className={`bg-white p-4 md:p-6 
+                                    border-2 border-black md:border md:border-black
+                                    ${index > 0 ? 'md:border-l-0' : ''}
+                                    hover:bg-bone transition-colors group`}
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.4, delay: 0.1 * index }}
                                 viewport={{ once: true }}
                             >
-                                <item.icon className="w-6 h-6 text-accent mb-3" />
-                                <h4 className="font-mono text-sm font-bold mb-2">{item.title}</h4>
-                                <p className="font-mono text-xs text-black/50 leading-relaxed">{item.desc}</p>
+                                <div className="font-serif text-2xl md:text-4xl font-bold text-accent mb-1">{stat.value}</div>
+                                <div className="font-mono text-[10px] md:text-xs uppercase tracking-widest text-black/40">{stat.label}</div>
+                            </motion.div>
+                        ))}
+                    </div>
+                    
+                    {/* Features Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 mb-6 md:mb-8">
+                        {features.map((feature, index) => (
+                            <motion.div 
+                                key={feature.title}
+                                className="border-2 border-black bg-white p-5 md:p-6 hover:bg-bone transition-colors group flex gap-4"
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.4, delay: 0.1 * index }}
+                                viewport={{ once: true }}
+                            >
+                                <div className="w-12 h-12 bg-accent/10 flex items-center justify-center shrink-0 group-hover:bg-accent/20 transition-colors">
+                                    <feature.icon className="w-6 h-6 text-accent" />
+                                </div>
+                                <div>
+                                    <h4 className="font-mono text-sm md:text-base font-bold mb-1">{feature.title}</h4>
+                                    <p className="font-mono text-xs text-black/50 leading-relaxed">{feature.desc}</p>
+                                </div>
                             </motion.div>
                         ))}
                     </div>
 
-                    {/* Footer note */}
-                    <div className="mt-6 text-center">
-                        <p className="font-mono text-xs text-black/30">
-                            Preferred over Zama & ZK models for institutional compliance and scalability
+                    {/* Bottom Line - Quote Style */}
+                    <motion.div 
+                        className="mt-2 pl-6 border-l-4 border-accent"
+                        initial={{ opacity: 0, x: -10 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.4 }}
+                        viewport={{ once: true }}
+                    >
+                        <p className="font-serif text-lg md:text-xl lg:text-2xl italic text-black/80 leading-relaxed">
+                            "Public chains cannot host institutional money at scale — <span className="text-accent font-semibold not-italic">Canton was built specifically to do so.</span>"
                         </p>
-                    </div>
+                    </motion.div>
                 </motion.div>
             </div>
         </SlideContainer>
