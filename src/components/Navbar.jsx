@@ -38,8 +38,8 @@ const Navbar = ({ dark = false, onToggleSidebar, showSidebarToggle = false }) =>
                         </button>
                     )}
                     <Link to="/">
-<img
-                            src={dark ? "/deploy_logo_dark.png" : "/deploy_logo.png"}
+                        <img
+                            src={dark ? "/logolightfull.png" : "/logodark%20full.png"}
                             alt="Deploy."
                             className="h-5 md:h-6"
                         />
@@ -113,7 +113,7 @@ const Navbar = ({ dark = false, onToggleSidebar, showSidebarToggle = false }) =>
                     >
                         {/* Menu Header */}
                         <div className="h-14 border-b border-black flex items-center justify-between px-4 flex-shrink-0">
-                            <img src="/deploy_logo.png" alt="Deploy." className="h-5" />
+                            <img src="/logodark%20full.png" alt="Deploy." className="h-5" />
                             <button 
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 className="p-2 border border-black hover:bg-black hover:text-white transition-colors"

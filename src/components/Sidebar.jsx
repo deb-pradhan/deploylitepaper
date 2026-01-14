@@ -57,7 +57,7 @@ const Sidebar = () => {
             )}>
                 <div className="mb-12">
                     <div className="flex items-center gap-3 mb-3">
-                        <img src="/logo-full.svg" alt="Deploy" className="h-8 w-auto" />
+                        <img src="/logodark%20full.png" alt="Deploy" className="h-8 w-auto" />
                     </div>
                     <h1 className="font-serif font-bold text-lg text-paper-text pl-1">Litepaper</h1>
                     <p className="text-xs text-gray-600 mt-1 pl-1">November 2025</p>
