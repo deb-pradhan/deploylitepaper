@@ -28,16 +28,16 @@
   --color-paper-text: #000000;
   --color-paper-muted: #000000/60;
   --color-paper-border: #000000;
-  --color-paper-accent: #0047FF;
+  --color-paper-accent: #474DEF;
 }
 
 /* Paper color utility classes */
 .bg-paper-bg { background-color: #F5F5F5; }
 .bg-paper-card { background-color: #FFFFFF; }
-.bg-paper-accent { background-color: #0047FF !important; }
+.bg-paper-accent { background-color: #474DEF !important; }
 .text-paper-text { color: #000000; }
 .text-paper-muted { color: rgba(0, 0, 0, 0.5); }
-.text-paper-accent { color: #0047FF; }
+.text-paper-accent { color: #474DEF; }
 .border-paper-border { border-color: rgba(0, 0, 0, 0.15); }
 
 body {
@@ -122,11 +122,11 @@ h6 {
 
 /* Pitch Deck Utility Classes */
 .text-accent {
-  color: #0047FF;
+  color: #474DEF;
 }
 
 .bg-accent {
-  background-color: #0047FF;
+  background-color: #474DEF;
 }
 
 .bg-bone {

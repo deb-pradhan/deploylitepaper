@@ -432,10 +432,10 @@ const APYChart = ({ compact = false }) => {
                             <Line 
                                 type="linear" 
                                 dataKey="apy" 
-                                stroke="#474DF0" 
+                                stroke="#474DEF" 
                                 strokeWidth={1.5}
-                                dot={{ r: 1.5, fill: '#474DF0', strokeWidth: 0 }}
-                                activeDot={{ r: 4, fill: '#474DF0', stroke: 'black', strokeWidth: 1 }}
+                                dot={{ r: 1.5, fill: '#474DEF', strokeWidth: 0 }}
+                                activeDot={{ r: 4, fill: '#474DEF', stroke: 'black', strokeWidth: 1 }}
                             />
                         </LineChart>
                     </ResponsiveContainer>
