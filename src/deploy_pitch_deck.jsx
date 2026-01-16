@@ -265,7 +265,7 @@ const processFundingData = (rawData, range) => {
 };
 
 const calculateAPYStats = (rawData) => {
-    if (!rawData?.length) return { live: null, thirtyDay: null, threeMonth: null, max: null, realised: null };
+    if (!rawData?.length) return { live: null, thirtyDay: null, threeMonth: null, sixMonth: null, max: null, realised: null };
     
     const sorted = [...rawData].sort((a, b) => a.time - b.time);
     const now = Date.now();
@@ -322,6 +322,7 @@ const calculateAPYStats = (rawData) => {
         live: liveAPY, // Current 24h APY
         thirtyDay: calcAvgAPY(thirtyDayData), // 30-day realized average
         threeMonth: calcAvgAPY(threeMonthData),
+        sixMonth: calcAvgAPY(sixMonthData), // 6-month average
         max: peakDailyAPY, // Peak daily APY from past 90 days
         realised: calcAvgAPY(realisedData) // All-time average from Jan 2024
     };
@@ -330,7 +331,7 @@ const calculateAPYStats = (rawData) => {
 // Provider that fetches data once on mount
 const FundingDataProvider = ({ children }) => {
     const [fundingHistory, setFundingHistory] = useState([]);
-    const [apyStats, setApyStats] = useState({ live: null, thirtyDay: null, threeMonth: null, max: null, realised: null });
+    const [apyStats, setApyStats] = useState({ live: null, thirtyDay: null, threeMonth: null, sixMonth: null, max: null, realised: null });
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -732,18 +733,14 @@ const SolutionSlide = () => {
                         <div className="p-5 md:p-6 border-2 border-black md:border bg-white">
                             <div className="text-3xl md:text-4xl font-serif text-accent mb-2">
                                 <ScrambledNumber 
-                                    value={apyStats.live}
+                                    value={apyStats.sixMonth}
                                     isLoading={isLoading}
                                     suffix="%"
                                     decimals={1}
                                 />
                             </div>
-                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50 flex items-center gap-1.5">
-                                <span className="relative flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                                </span>
-                                Live APY
+                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">
+                                6M avg APY
                             </div>
                         </div>
                         <div className="p-5 md:p-6 border-2 border-black md:border md:border-l-0 bg-white">
@@ -813,7 +810,7 @@ const SolutionSlide = () => {
 const BetaSlide = () => {
     const stats = [
         { label: "TVL", value: "15", prefix: "$", suffix: "M", icon: DollarSign },
-        { label: "Yield Generated", value: "1.6", prefix: "$", suffix: "M", icon: TrendingUp },
+        { label: "Yield Generated (6 months results)", value: "1.6", prefix: "$", suffix: "M", icon: TrendingUp },
         { label: "Active Wallets", value: "2000", prefix: "", suffix: "+", icon: Wallet },
         { label: "Time to Threshold", value: "2", prefix: "", suffix: " Weeks", icon: Zap },
     ];
@@ -965,6 +962,7 @@ const MechanicsSlide = () => {
 const PartnersSlide = () => {
     const partners = [
         { name: "FalconX", type: "Partnership", description: "Prime brokerage partner" },
+        { name: "Coincall", type: "Partnership", description: "Strategic partner", logo: "/coincall.png" },
     ];
 
     const commitments = [
@@ -1016,12 +1014,18 @@ const PartnersSlide = () => {
                             <div className="p-4 md:p-5 border-b border-black bg-black/5">
                                 <h3 className="font-mono text-xs uppercase tracking-widest">Key Partners</h3>
                             </div>
-                            <div className="flex-1 flex flex-col justify-center p-6 md:p-8">
+                            <div className="flex-1 flex flex-col justify-center p-6 md:p-8 gap-6">
                                 {partners.map((partner) => (
                                     <div key={partner.name} className="flex items-center gap-4">
-                                        <div className="w-14 h-14 bg-accent/10 flex items-center justify-center">
-                                            <Handshake className="w-7 h-7 text-accent" />
-                                        </div>
+                                        {partner.logo ? (
+                                            <div className="w-14 h-14 bg-accent/10 flex items-center justify-center p-2">
+                                                <img src={partner.logo} alt={partner.name} className="w-full h-full object-contain" />
+                                            </div>
+                                        ) : (
+                                            <div className="w-14 h-14 bg-accent/10 flex items-center justify-center">
+                                                <Handshake className="w-7 h-7 text-accent" />
+                                            </div>
+                                        )}
                                         <div>
                                             <div className="font-serif text-2xl md:text-3xl mb-1">{partner.name}</div>
                                             <div className="font-mono text-[10px] uppercase tracking-widest text-accent mb-1">{partner.type}</div>
