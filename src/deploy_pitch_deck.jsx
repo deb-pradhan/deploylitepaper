@@ -787,7 +787,7 @@ const SolutionSlide = () => {
 const BetaSlide = () => {
     const stats = [
         { label: "TVL", value: "15", prefix: "$", suffix: "M", icon: DollarSign },
-        { label: "Yield Generated", value: "1.6", prefix: "$", suffix: "M", icon: TrendingUp },
+        { label: "Yield Generated (6M)", value: "1.6", prefix: "$", suffix: "M", icon: TrendingUp },
         { label: "Active Wallets", value: "2000", prefix: "", suffix: "+", icon: Wallet },
         { label: "To Reach Cap", value: "2", prefix: "", suffix: " Weeks", icon: Zap },
     ];
