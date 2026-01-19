@@ -731,51 +731,25 @@ const SolutionSlide = () => {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-0 mb-8">
                         <div className="p-5 md:p-6 border-2 border-black md:border bg-white">
                             <div className="text-3xl md:text-4xl font-serif text-accent mb-2">
-                                <ScrambledNumber 
-                                    value={apyStats.live}
-                                    isLoading={isLoading}
-                                    suffix="%"
-                                    decimals={1}
-                                />
+                                <span className="tabular-nums tracking-tight font-mono">15.2%</span>
                             </div>
-                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50 flex items-center gap-1.5">
-                                <span className="relative flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                                </span>
-                                Live APY
-                            </div>
+                            <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">6M avg APY</div>
                         </div>
                         <div className="p-5 md:p-6 border-2 border-black md:border md:border-l-0 bg-white">
                             <div className="text-3xl md:text-4xl font-serif text-accent mb-2">
-                                <ScrambledNumber 
-                                    value={apyStats.thirtyDay}
-                                    isLoading={isLoading}
-                                    suffix="%"
-                                    decimals={1}
-                                />
+                                <span className="tabular-nums tracking-tight font-mono">8.3%</span>
                             </div>
                             <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">30D Avg APY</div>
                         </div>
                         <div className="p-5 md:p-6 border-2 border-black md:border md:border-l-0 bg-white">
                             <div className="text-3xl md:text-4xl font-serif text-accent mb-2">
-                                <ScrambledNumber 
-                                    value={apyStats.max}
-                                    isLoading={isLoading}
-                                    suffix="%"
-                                    decimals={1}
-                                />
+                                <span className="tabular-nums tracking-tight font-mono">40.1%</span>
                             </div>
                             <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">6M Peak APY</div>
                         </div>
                         <div className="p-5 md:p-6 border-2 border-black md:border md:border-l-0 bg-white">
                             <div className="text-3xl md:text-4xl font-serif text-accent mb-2">
-                                <ScrambledNumber 
-                                    value={apyStats.realised}
-                                    isLoading={isLoading}
-                                    suffix="%"
-                                    decimals={1}
-                                />
+                                <span className="tabular-nums tracking-tight font-mono">20.3%</span>
                             </div>
                             <div className="font-mono text-[10px] md:text-xs uppercase tracking-wide text-black/50">Pilot Realised APY</div>
                         </div>
@@ -815,7 +789,7 @@ const BetaSlide = () => {
         { label: "TVL", value: "15", prefix: "$", suffix: "M", icon: DollarSign },
         { label: "Yield Generated", value: "1.6", prefix: "$", suffix: "M", icon: TrendingUp },
         { label: "Active Wallets", value: "2000", prefix: "", suffix: "+", icon: Wallet },
-        { label: "Time to Threshold", value: "2", prefix: "", suffix: " Weeks", icon: Zap },
+        { label: "To Reach Cap", value: "2", prefix: "", suffix: " Weeks", icon: Zap },
     ];
 
     return (
@@ -892,7 +866,7 @@ const MechanicsSlide = () => {
 
     const features = [
         { label: "Self-Custodial", value: "Your keys, your funds", icon: Shield },
-        { label: "No Lock-ups", value: "Withdraw anytime", icon: Clock },
+        { label: "Minimal Lock-ups", value: "1 week cool off time", icon: Clock },
         { label: "Real-time Yield", value: "Accrues every block", icon: Zap },
     ];
 
@@ -1204,6 +1178,14 @@ const TeamSlide = () => {
             twitter: "https://x.com/TheWhale_hunter",
             image: "https://pbs.twimg.com/profile_images/1947936283579305984/_NFcr8_s_400x400.jpg"
         },
+        {
+            name: "Michael Conn",
+            role: "Institutional CIO",
+            bio: "Led $45M raise for first Ethereum-focused public company. Deep institutional finance background.",
+            prev: "Ex Co-Founder Ether Capital",
+            twitter: "https://x.com/onejouroulautre",
+            image: "https://unavatar.io/twitter/onejouroulautre"
+        },
         { 
             name: "Deb", 
             role: "COO", 
@@ -1244,7 +1226,7 @@ const TeamSlide = () => {
                     </h2>
                     
                     {/* Core Team */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-0 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-0 mb-8">
                         {team.map((member, i) => (
                             <div 
                                 key={member.name} 
