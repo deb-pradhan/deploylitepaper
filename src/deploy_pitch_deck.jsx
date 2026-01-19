@@ -1122,7 +1122,7 @@ const TeamSlide = () => {
             name: "Michael Conn",
             role: "Institutional CIO",
             bio: "Led $45M raise for first Ethereum-focused public company. Deep institutional finance background.",
-            prev: "Co-Founder Ether Capital, Ex-AllianceBernstein",
+            prev: "Ex Co-Founder Ether Capital",
             twitter: "https://x.com/onejouroulautre",
             image: "https://unavatar.io/twitter/onejouroulautre"
         },
