@@ -1103,7 +1103,7 @@ const TokenomicsSlide = () => {
 const TeamSlide = () => {
     const team = [
         { 
-            name: "Amit",
+            name: "Amit Trehan",
             role: "Founder & CEO",
             bio: "Security-first engineer. Built trading systems at scale.",
             prev: "Ex-VP Lloyd's Bank",
@@ -1111,7 +1111,7 @@ const TeamSlide = () => {
             image: "https://pbs.twimg.com/profile_images/1927061332194430976/XrXvfC3Y_400x400.jpg"
         },
         { 
-            name: "Benjamin",
+            name: "Benjamin Hunter",
             role: "DeFi Strategist",
             bio: "Product visionary. Built and scaled multiple fintech products.",
             prev: "Ex-ASML",
@@ -1127,7 +1127,7 @@ const TeamSlide = () => {
             image: "https://unavatar.io/twitter/onejouroulautre"
         },
         { 
-            name: "Deb", 
+            name: "Deb Pradhan", 
             role: "COO", 
             bio: "Operations expert. Scaling teams and processes.",
             prev: "Operations Background",
@@ -1138,15 +1138,15 @@ const TeamSlide = () => {
 
     const advisors = [
         { name: "Ben Lilly", role: "Advisor", expertise: "DeFi Strategist" },
-        { name: "Chirdeep", role: "Advisor", expertise: "Strategic Advisor" },
-        { name: "Shawn", role: "Angel", expertise: "Ex-JPMorgan" },
+        { name: "Chirdeep Chhabra", role: "Advisor", expertise: "ex-Citi Global Head of Tokenization" },
+        { name: "Shawn Marks", role: "Angel", expertise: "Ex-JPMorgan" },
     ];
 
     const angels = [
         { name: "FalconX", role: "Advisory & Angel", expertise: "Crypto Prime Brokerage", note: "Committed" },
-        { name: "Jimmy", role: "Angel", expertise: "Coincall" },
-        { name: "0xwives", role: "Angel", expertise: "aixbt" },
-        { name: "Sankalp", role: "Angel", expertise: "Rising Capital", link: "https://risingcap.co/" },
+        { name: "Jimmy Zhong", role: "Angel", expertise: "Coincall" },
+        { name: "0xWives", role: "Angel", expertise: "AIXbt" },
+        { name: "Sankalp Sanskari", role: "Angel", expertise: "Rising Capital", link: "https://risingcap.co/" },
         { name: "Albin Wang", role: "Angel", expertise: "BitGo", link: "https://sg.linkedin.com/in/albinwan" },
     ];
 
