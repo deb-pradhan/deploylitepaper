@@ -26,7 +26,7 @@ const itemVariants = {
 
 const Roadmap = () => {
     return (
-        <Section id="roadmap" subtitle="8. Roadmap" title="$80M+ Committed — Scaling to Billions">
+        <Section id="roadmap" subtitle="8. Roadmap" title="$90M+ Committed — Scaling to Billions">
             <motion.div
                 className="relative border-l border-paper-border ml-4 md:ml-6 space-y-8 py-4 not-prose"
                 variants={containerVariants}
@@ -42,13 +42,13 @@ const Roadmap = () => {
                     {/* Content Card */}
                     <div className="bg-paper-card p-6 rounded-xl border border-paper-border shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                         <span className="inline-block px-2 py-1 rounded bg-paper-bg text-xs font-bold uppercase tracking-wider text-paper-muted mb-3 border border-paper-border">
-                            January 2026
+                            February 2026
                         </span>
                         <h4 className="text-lg md:text-xl font-serif font-bold mb-2 text-paper-text">
                             dUSD Public Launch
                         </h4>
                         <p className="text-paper-muted leading-relaxed">
-                            Launch on Ethereum mainnet with $80M+ TVL committed from strategic LPs and institutional partners.
+                            Launch on Ethereum mainnet with $90M+ TVL committed from strategic LPs and institutional partners.
                         </p>
                     </div>
                 </motion.div>
@@ -76,7 +76,7 @@ const Roadmap = () => {
 
                     <div className="bg-paper-card p-6 rounded-xl border border-paper-border shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                         <span className="inline-block px-2 py-1 rounded bg-paper-bg text-xs font-bold uppercase tracking-wider text-paper-muted mb-3 border border-paper-border">
-                            Q1–Q2 2026
+                            Q2 2026
                         </span>
                         <h4 className="text-lg md:text-xl font-serif font-bold mb-2 text-paper-text">
                             Integrations & Spending
@@ -93,13 +93,13 @@ const Roadmap = () => {
 
                     <div className="bg-paper-card p-6 rounded-xl border border-paper-border shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                         <span className="inline-block px-2 py-1 rounded bg-paper-bg text-xs font-bold uppercase tracking-wider text-paper-muted mb-3 border border-paper-border">
-                            Mid-2026
+                            Q3 2026
                         </span>
                         <h4 className="text-lg md:text-xl font-serif font-bold mb-2 text-paper-text">
-                            Privacy & Enterprise
+                            Canton Network Deployment
                         </h4>
                         <p className="text-paper-muted leading-relaxed">
-                            Privacy-enhanced DUSD and Canton Network enterprise deployment.
+                            Launch privacy-enabled dUSD on Canton Network—unlocking institutional capital with sub-transaction level privacy, no mempool exposure, and direct access to Canton's existing ecosystem of market makers (FalconX, GSR, DRW) and institutional partners.
                         </p>
                     </div>
                 </motion.div>
